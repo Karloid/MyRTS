@@ -59,6 +59,10 @@ public class MyInputProcessor implements InputProcessor {
         if (keyCode == Input.Keys.A) {
             getRTSWorld().getWorldRenderer().getCamera().move(Directions.LEFT);
         }
+
+        if (keyCode == Input.Keys.F1) {
+            getRTSWorld().getWorldRenderer().setDrawGrid(!getRTSWorld().getWorldRenderer().isDrawGrid());
+        }
         return false;
     }
 
@@ -90,8 +94,32 @@ public class MyInputProcessor implements InputProcessor {
         screenY = worldView.getHeigth() - screenY;
         if (button == Input.Buttons.LEFT) {
             touchDown = false;
+            handleSelectRectangle();
         }
         return false;
+    }
+
+    private void handleSelectRectangle() {
+        int xMin = Math.min(touchDownPos.getX(), touchMovePos.getX());
+        int yMin = Math.min(touchDownPos.getY(), touchMovePos.getY());
+        int xMax = Math.max(touchDownPos.getX(), touchMovePos.getX());
+        int yMax = Math.max(touchDownPos.getY(), touchMovePos.getY());
+        Point cameraPos = getRTSWorld().getWorldRenderer().getCamera().getPos();
+        int width = getRTSWorld().getWorldRenderer().getWorldView().getWidth();
+        int height = getRTSWorld().getWorldRenderer().getWorldView().getHeigth();
+        xMin = calcX(xMin, cameraPos, width);
+        yMin = calcY(yMin, cameraPos, height);
+        xMax = calcX(xMax, cameraPos, width);
+        yMax = calcY(yMax, cameraPos, height);
+        getRTSWorld().getLogicController().selectUnits(new Point(xMin, yMin), new Point(xMax, yMax));
+    }
+
+    private int calcX(int x, Point cameraPos, int width) {
+        return (x + cameraPos.getX() - width / 2) / getRTSWorld().getUnitCellSize();
+    }
+
+    private int calcY(int y, Point cameraPos, int height) {
+        return (y + cameraPos.getY() - height / 2) / getRTSWorld().getUnitCellSize();
     }
 
     @Override
@@ -99,7 +127,7 @@ public class MyInputProcessor implements InputProcessor {
         screenY = worldView.getHeigth() - screenY;
         if (touchDown) {
             touchMovePos = new Point(screenX, screenY);
-            System.out.println("move: screenX:" + screenX + " screenY:" + screenY);
+            //  System.out.println("move: screenX:" + screenX + " screenY:" + screenY);
         }
         return false;
     }
