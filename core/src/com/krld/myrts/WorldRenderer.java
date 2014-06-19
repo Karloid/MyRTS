@@ -3,8 +3,11 @@ package com.krld.myrts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import java.util.List;
 
 /**
  * Created by Andrey on 6/16/2014.
@@ -17,22 +20,27 @@ public class WorldRenderer {
     private ShapeRenderer renderer;
     private MyInputProcessor myInputProcessor;
     private Color selectionColor;
-    private int width;
-    private int height;
+    private int widthView;
+    private int heightView;
     private int unitCellSize;
     private Texture defaultTexture;
     private Texture soldierTexture;
     private Texture selectRect;
+    private Texture stepsTexture;
+    private int heightUnits;
+    private int widthUnits;
+    private BitmapFont font;
+    private BitmapFont fontLittle;
 
-    public boolean isDrawGrid() {
-        return drawGrid;
+    public boolean isDrawDebug() {
+        return drawDebug;
     }
 
-    public void setDrawGrid(boolean drawGrid) {
-        this.drawGrid = drawGrid;
+    public void setDrawDebug(boolean drawDebug) {
+        this.drawDebug = drawDebug;
     }
 
-    private boolean drawGrid;
+    private boolean drawDebug;
 
     public WorldRenderer(RTSWorld rtsWorld) {
         setRtsWorld(rtsWorld);
@@ -46,12 +54,25 @@ public class WorldRenderer {
         myInputProcessor = worldView.getInputProcessor();
         initColors();
         initTextures();
+        initFonts();
+    }
+
+    private void initFonts() {
+        font = new BitmapFont(Gdx.files.internal("rotorBoyShadow.fnt"),
+                Gdx.files.internal("rotorBoyShadow.png"), false);
+        font.setColor(Color.WHITE);
+        font.scale(1f);
+        fontLittle = new BitmapFont(Gdx.files.internal("rotorBoyShadow.fnt"),
+                Gdx.files.internal("rotorBoyShadow.png"), false);
+        fontLittle.setColor(Color.WHITE);
+        fontLittle.scale(0.01f);
     }
 
     private void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
         soldierTexture = new Texture(Gdx.files.internal("soldier1.png"));
         selectRect = new Texture(Gdx.files.internal("selectRect.png"));
+        stepsTexture = new Texture(Gdx.files.internal("steps.png"));
     }
 
     private void initColors() {
@@ -72,33 +93,92 @@ public class WorldRenderer {
         drawTiles(batch, camera.getPos());
         drawUnits(batch, camera.getPos());
         drawGrid(batch, camera.getPos());
+        drawPaths(batch, camera.getPos());
         drawUI(batch, camera.getPos());
+    }
+
+    private void drawPaths(SpriteBatch batch, Point cameraPos) {
+        if (!drawDebug) {
+            return;
+        }
+        batch.end();
+        renderer.begin(ShapeRenderer.ShapeType.Filled);
+        renderer.setColor(Color.RED);
+        // draw obstacles
+        for (int x = 0; x < widthUnits; x++) {
+            for (int y = 0; y < heightUnits; y++) {
+                if (!rtsWorld.noObstacle(new Point(x, y))) {
+                    int calcedX = x * unitCellSize - cameraPos.getX() + widthView / 2;
+                    int calcedY = y * unitCellSize - cameraPos.getY() + heightView / 2;
+                    // batch.draw(defaultTexture, calcedX - unitCellSize * 1.5f, calcedY - unitCellSize * 1.5f, unitCellSize * 2, unitCellSize * 2);
+                    if (calcedX > 1200 || calcedY > 1000) {
+                        continue;
+                    }
+                    renderer.rect(calcedX, calcedY, 8, 8);
+                }
+            }
+        }
+        renderer.end();
+        batch.begin();
+        for (Unit unit : rtsWorld.getUnits()) {
+            List<Point> path = unit.getMoveBehavior().getPath();
+            if (path != null) {
+                for (Point point : path) {
+                    int calcedX = point.getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+                    int calcedY = point.getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+                    batch.draw(stepsTexture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+                }
+            }
+        }
     }
 
     private void drawUnits(SpriteBatch batch, Point cameraPos) {
         for (Unit unit : rtsWorld.getUnits()) {
             Texture texture = defaultTexture;
-            int calcedX = unit.getPos().getX() * unitCellSize - cameraPos.getX() + width / 2;
-            int calcedY = unit.getPos().getY() * unitCellSize - cameraPos.getY() + height / 2;
+            int calcedX = unit.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+            int calcedY = unit.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
             if (unit.getType().equals(UnitType.SOLDIER)) {
                 texture = soldierTexture;
             }
-            batch.draw(texture, calcedX - unitCellSize * 1.5f, calcedY - unitCellSize * 1.5f, unitCellSize * 2, unitCellSize * 2);
+            batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
             if (getRtsWorld().getLogicController().getSelectedUnits() != null &&
                     getRtsWorld().getLogicController().getSelectedUnits().contains(unit)) {
-                batch.draw(selectRect, calcedX - unitCellSize * 1.5f, calcedY - unitCellSize * 1.5f, unitCellSize * 2, unitCellSize * 2);
+                batch.draw(selectRect, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
             }
         }
 
     }
 
     private void initValues() {
-        height = getWorldView().getHeigth();
-        width = getWorldView().getWidth();
+        heightView = getWorldView().getHeigth();
+        widthView = getWorldView().getWidth();
+        widthUnits = rtsWorld.getMapManager().getMapWidth() * RTSWorld.UNIT_CELL_SIZE_RELATIONS;
+        heightUnits = rtsWorld.getMapManager().getMapHeight() * RTSWorld.UNIT_CELL_SIZE_RELATIONS;
         unitCellSize = rtsWorld.getUnitCellSize();
     }
 
     private void drawUI(SpriteBatch batch, Point pos) {
+        drawSelectRectangle(batch);
+        drawUnitInfo(batch);
+    }
+
+    private void drawUnitInfo(SpriteBatch batch) {
+        List<Unit> selectedUnits = rtsWorld.getLogicController().getSelectedUnits();
+        if (selectedUnits != null && selectedUnits.size() == 1) {
+            Unit unit = selectedUnits.get(0);
+            List<Point> path = unit.getMoveBehavior().getPath();
+            String debugString = "_";
+            if (path != null)
+                debugString = ((aStarMoveBehavior) (unit.getMoveBehavior())).getManhattanDistance(unit.getPos(),
+                        path.get(0), false) + "";
+            fontLittle.draw(batch, "id:" + unit.getId() + "; Type: " + unit.getType(), UIConstants.UNIT_TYPE.getX(), UIConstants.UNIT_TYPE.getY());
+            fontLittle.draw(batch, "Action: " + unit.getAction(), UIConstants.UNIT_ACTION.getX(), UIConstants.UNIT_ACTION.getY());
+            fontLittle.draw(batch, "Direction: " + unit.getDirection(), UIConstants.UNIT_DIRECTION.getX(), UIConstants.UNIT_DIRECTION.getY());
+            fontLittle.draw(batch, "Debug: " + debugString, UIConstants.UNIT_DEBUG.getX(), UIConstants.UNIT_DEBUG.getY());
+        }
+    }
+
+    private void drawSelectRectangle(SpriteBatch batch) {
         batch.end();
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(getSelectionColor());
@@ -132,25 +212,32 @@ public class WorldRenderer {
     }
 
     private void drawGrid(SpriteBatch batch, Point cameraPos) {
-        if (!drawGrid) {
+        if (!drawDebug) {
             return;
         }
         batch.end();
         renderer.begin(ShapeRenderer.ShapeType.Line);
         renderer.setColor(Color.RED);
-        for (int x = 0; x < width * unitCellSize; x++) {
-            int calcedX = x * unitCellSize - cameraPos.getX() + width / 2;
-            int scaledY = 0 - cameraPos.getY() + height / 2;
-            renderer.line(calcedX, scaledY,
-                    calcedX, height * unitCellSize);
+        for (int x = 0; x < rtsWorld.getMapManager().getMapWidth() * RTSWorld.UNIT_CELL_SIZE_RELATIONS; x++) {
+            int calcedX = x * unitCellSize - cameraPos.getX() + widthView / 2;
+            int calcedY = 0 * unitCellSize - cameraPos.getY() + heightView / 2;
+            renderer.line(calcedX, calcedY,
+                    calcedX, calcedY + heightUnits * unitCellSize);
         }
 
-        for (int y = 0; y < height * unitCellSize; y++) {
-            int calcedX = 0 /*- rtsWorld.getCellSize() / 2*/ - cameraPos.getX() + width / 2;
-            int calcedY = y * unitCellSize /*- rtsWorld.getCellSize() / 2 */ - cameraPos.getY() + height / 2;
+        for (int y = 0; y < rtsWorld.getMapManager().getMapHeight() * RTSWorld.UNIT_CELL_SIZE_RELATIONS; y++) {
+            int calcedX = 0 * unitCellSize - cameraPos.getX() + widthView / 2;
+            int calcedY = y * unitCellSize - cameraPos.getY() + heightView / 2;
             renderer.line(calcedX, calcedY,
-                    width * unitCellSize, calcedY);
+                    calcedX + heightUnits * unitCellSize, calcedY);
         }
+
+       /* for (int y = 0; y < rtsWorld.getMapManager().getMapHeight() * RTSWorld.UNIT_CELL_SIZE_RELATIONS; y++) {
+            int calcedX = 0 *//*- rtsWorld.getCellSize() / 2*//* - cameraPos.getX() + widthView / 2;
+            int calcedY = y * unitCellSize *//*- rtsWorld.getCellSize() / 2 *//* - cameraPos.getY() + heightView / 2;
+            renderer.line(calcedX, calcedY,
+                    widthUnits * unitCellSize, calcedY);
+        }*/
         renderer.end();
         batch.begin();
     }
@@ -161,12 +248,12 @@ public class WorldRenderer {
         int cellSize = getRtsWorld().getCellSize();
         for (int x = 0; x < rtsWorld.getMapManager().getMapWidth(); x++) {
             for (int y = 0; y < rtsWorld.getMapManager().getMapHeight(); y++) {
-                scaledX = x * rtsWorld.getCellSize() /*- rtsWorld.getCellSize() / 2*/ - cameraPos.getX() + width / 2;
-                if (scaledX > width || scaledX < -cellSize) {
+                scaledX = x * rtsWorld.getCellSize() /*- rtsWorld.getCellSize() / 2*/ - cameraPos.getX() + widthView / 2;
+                if (scaledX > widthView || scaledX < -cellSize) {
                     continue;
                 }
-                scaledY = y * cellSize /*- rtsWorld.getCellSize() / 2*/ - cameraPos.getY() + height / 2;
-                if (scaledY > height || scaledY < -cellSize) {
+                scaledY = y * cellSize /*- rtsWorld.getCellSize() / 2*/ - cameraPos.getY() + heightView / 2;
+                if (scaledY > heightView || scaledY < -cellSize) {
                     continue;
                 }
                 batch.draw(MapManager.tileTypes.get(getRtsWorld().getMap()[x][y]).getGdxTexture(),

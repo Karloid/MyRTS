@@ -22,6 +22,7 @@ public class MapManager {
     public static Map<Integer, TileType> tileTypes;
     private int mapWidth;
     private int mapHeight;
+    private RTSWorld rtsWorld;
 
 /*    public MapManager(Activity activity) {
         this.activity = activity;
@@ -60,7 +61,10 @@ public class MapManager {
     }
 
     public boolean haveTag(int id, String tag) {
-        TileType tileType = getTileTypeById(id);
+        TileType tileType = tileTypes.get(id);
+        if (tileType.getTags() == null) {
+            return false;
+        }
         for (String str : tileType.getTags()) {
             if (str.equals(tag)) {
                 return true;
@@ -70,11 +74,11 @@ public class MapManager {
     }
 
     private TileType getTileTypeById(int id) {
-       /* for (TileType tileType : tileTypes) {
+    /*    for (TileType tileType : tileTypes) {
             if (tileType.getId() == id) {
                 return tileType;
             }
-        }          */
+        } */
         return null;
     }
 
@@ -103,6 +107,7 @@ public class MapManager {
         return tiles;
     }
 
+
     public int getMapWidth() {
         return mapWidth;
     }
@@ -126,5 +131,31 @@ public class MapManager {
 
     private Texture loadTexture(String fileName, int width, int height) {
         return new Texture(Gdx.files.internal(fileName.toLowerCase()));
+    }
+
+    public int[][] createObstacleMap() {
+        int[][] obstacleMap = new int[mapWidth * RTSWorld.UNIT_CELL_SIZE_RELATIONS][mapHeight * RTSWorld.UNIT_CELL_SIZE_RELATIONS];
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                if (haveTag(rtsWorld.getMap()[x][y], "IMPASSABLE")) {
+                    int startX = x * rtsWorld.getUnitCellSize()/2;
+                    int startY = y * rtsWorld.getUnitCellSize()/2;
+                    for (int i = 0; i < 4; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            obstacleMap[startX + i][startY + j] = 1;
+                        }
+                    }
+                }
+            }
+        }
+        return obstacleMap;
+    }
+
+    public void setRtsWorld(RTSWorld rtsWorld) {
+        this.rtsWorld = rtsWorld;
+    }
+
+    public RTSWorld getRtsWorld() {
+        return rtsWorld;
     }
 }

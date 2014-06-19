@@ -13,4 +13,6 @@ public interface AbstractLogicController {
     void selectUnits(Point minPoint, Point maxPoint);
 
     List<Unit> getSelectedUnits();
+
+    void mouseAction(Point point);
 }
