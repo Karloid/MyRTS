@@ -37,7 +37,7 @@ public class Point {
     }
 
     public Point getCopy() {
-        return new Point(x,y);
+        return new Point(x, y);
     }
 
     @Override
@@ -58,5 +58,12 @@ public class Point {
         int result = x;
         result = 31 * result + y;
         return result;
+    }
+
+    public static double getManhattanDistance(Point position, Point position1) {
+        double dx = Math.abs(position.getX() - position1.getX());
+        double dy = Math.abs(position.getY() - position1.getY());
+
+        return 1 * (dx + dy);
     }
 }

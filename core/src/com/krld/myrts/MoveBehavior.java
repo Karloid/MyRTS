@@ -6,7 +6,7 @@ import java.util.List;
  * Created by Andrey on 6/17/2014.
  */
 public interface MoveBehavior {
-    void setDestMovePoint(Point point);
+    void setDestMovePoint(Point point, boolean ignoreUnits);
 
     void setUnit(Unit unit);
 
@@ -19,4 +19,6 @@ public interface MoveBehavior {
     void denyMove();
 
     void applyMove();
+
+    Point getDestMovePoint();
 }

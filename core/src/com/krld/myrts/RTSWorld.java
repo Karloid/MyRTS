@@ -20,7 +20,7 @@ public class RTSWorld {
     private int[][] map;
     private int unitCellSize;
     private Thread runner;
-    private AbstractLogicController logicController;
+    private LogicController logicController;
     private List<Unit> units;
     private AbsractUnitFabric unitFabric;
     private Player humanPlayer;
@@ -39,7 +39,7 @@ public class RTSWorld {
       //  setMap(mapManager.loadMapFromFile("river.json"));
        // setMap(mapManager.loadMapFromFile("test.json"));
         obstacleMap = mapManager.createObstacleMap();
-        logicController = new LogicController();
+        logicController = new DefaultLogicController();
         logicController.setRTSWorld(this);
         initContainers();
     }
@@ -72,6 +72,8 @@ public class RTSWorld {
         units.add(unitFabric.createSoldier(0, 3, getHumanPlayer()));
         units.add(unitFabric.createSoldier(5, 2, getHumanPlayer()));
         units.add(unitFabric.createSoldier(5, 17, getHumanPlayer()));
+
+        units.add(unitFabric.createSoldier(20, 20, getCPUPlayer()));
     }
 
     public WorldRenderer getWorldRenderer() {
@@ -156,7 +158,7 @@ public class RTSWorld {
         return units;
     }
 
-    public AbstractLogicController getLogicController() {
+    public LogicController getLogicController() {
         return logicController;
     }
 
@@ -202,6 +204,9 @@ public class RTSWorld {
     }
 
     public boolean canMoveToPoint(Point point, boolean ignoreUnits) {
+        if (point == null) {
+            return false;
+        }
         if (inMap(point) && noObstacle(point) && (!unitInPoint(point) || ignoreUnits )) {
             return true;
         }
@@ -233,5 +238,14 @@ public class RTSWorld {
             //do nothing
         }
         return false;
+    }
+
+    public Unit getEnemyUnitInPoint(Point point, Player requestPlayer) {
+        for (Unit unit : units) {
+            if (unit.getPlayer()!= requestPlayer && unit.getPos().equals(point)) {
+                return unit;
+            }
+        }
+        return null;
     }
 }

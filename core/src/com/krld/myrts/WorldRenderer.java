@@ -187,17 +187,20 @@ public class WorldRenderer {
 
     private void drawUnitInfo(SpriteBatch batch) {
         List<Unit> selectedUnits = rtsWorld.getLogicController().getSelectedUnits();
-        if (selectedUnits != null && selectedUnits.size() == 1) {
+        boolean oneUnitSelected = selectedUnits != null && selectedUnits.size() == 1;
+        if (oneUnitSelected) {
             Unit unit = selectedUnits.get(0);
             List<Point> path = unit.getMoveBehavior().getPath();
             String debugString = "_";
             if (path != null)
-                debugString = ((aStarMoveBehavior) (unit.getMoveBehavior())).getManhattanDistance(unit.getPos(),
+                debugString = ((AStarMoveBehavior) (unit.getMoveBehavior())).getManhattanDistance(unit.getPos(),
                         path.get(0), false) + "";
             fontLittle.draw(batch, "id:" + unit.getId() + "; Type: " + unit.getType(), UIConstants.UNIT_TYPE.getX(), UIConstants.UNIT_TYPE.getY());
             fontLittle.draw(batch, "Action: " + unit.getAction(), UIConstants.UNIT_ACTION.getX(), UIConstants.UNIT_ACTION.getY());
             fontLittle.draw(batch, "Direction: " + unit.getDirection(), UIConstants.UNIT_DIRECTION.getX(), UIConstants.UNIT_DIRECTION.getY());
             fontLittle.draw(batch, "Debug: " + debugString, UIConstants.UNIT_DEBUG.getX(), UIConstants.UNIT_DEBUG.getY());
+        } else if (selectedUnits != null){
+            fontLittle.draw(batch, "selected " + selectedUnits.size() + " units", UIConstants.UNIT_TYPE.getX(), UIConstants.UNIT_TYPE.getY());
         }
     }
 

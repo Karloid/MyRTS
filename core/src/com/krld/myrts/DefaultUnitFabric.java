@@ -15,8 +15,9 @@ public class DefaultUnitFabric implements AbsractUnitFabric {
         Unit unit = new Unit(x, y);
         unit.setType(UnitType.SOLDIER);
         unit.setRtsWorld(getRtsWorld());
-        unit.setMoveBehavior(new aStarMoveBehavior());
+        unit.setMoveBehavior(new AStarMoveBehavior());
         unit.setPlayer(player);
+        unit.setActionBehavior(new MeleeSoldierBehaviour());
         return unit;
     }
 

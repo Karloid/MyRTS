@@ -11,6 +11,7 @@ public class Unit {
     private ActionType action;
     private com.krld.myrts.RTSWorld rtsWorld;
     private int id;
+    private ActionBehaviour actionBehavior;
 
     public Point getPos() {
         return pos;
@@ -54,8 +55,8 @@ public class Unit {
     }
 
     public void setDestMovePoint(Point point) {
+         getActionBehavior().actionOnPoint(point);
 
-        getMoveBehavior().setDestMovePoint(point);
     }
 
     public void setDirection(Direction direction) {
@@ -83,7 +84,8 @@ public class Unit {
     }
 
     public void update() {
-        moveBehavior.update();
+        actionBehavior.update();
+
     }
 
     public void setPos(Point pos) {
@@ -92,5 +94,14 @@ public class Unit {
 
     public int getId() {
         return id;
+    }
+
+    public void setActionBehavior(ActionBehaviour actionBehavior) {
+        this.actionBehavior = actionBehavior;
+        actionBehavior.setUnit(this);
+    }
+
+    public ActionBehaviour getActionBehavior() {
+        return actionBehavior;
     }
 }
