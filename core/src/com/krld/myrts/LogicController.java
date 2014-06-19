@@ -2,6 +2,7 @@ package com.krld.myrts;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public class LogicController implements AbstractLogicController {
 
     @Override
     public void update() {
-              updateUnits();
+        updateUnits();
     }
 
     private void updateUnits() {
@@ -21,15 +22,25 @@ public class LogicController implements AbstractLogicController {
             unit.update();
         }
         applyUnitsAction();
+        Collections.sort(rtsWorld.getUnits(), (Unit o1, Unit o2) -> {
+            if (o1.getPos().getY() > o2.getPos().getY()) {
+                return -1;
+            }
+            if (o1.getPos().getY() < o2.getPos().getY()) {
+                return 1;
+            }
+            return 0;
+        });
     }
 
     private void applyUnitsAction() {
-        for (Unit unit: rtsWorld.getUnits()) {
+        for (Unit unit : rtsWorld.getUnits()) {
             if (unit.getAction().equals(ActionType.MOVE)) {
                 unitMove(unit);
             }
         }
     }
+
     private void unitMove(Unit unit) {
         if (unit.getAction() != ActionType.MOVE) {
             return;
@@ -40,6 +51,9 @@ public class LogicController implements AbstractLogicController {
 
         if (rtsWorld.canMoveToPoint(newPoint, false)) {
             unit.setPos(newPoint);
+            unit.getMoveBehavior().applyMove();
+        } else {
+            unit.getMoveBehavior().denyMove();
         }
     }
 

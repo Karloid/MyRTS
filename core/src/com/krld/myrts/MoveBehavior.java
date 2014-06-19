@@ -15,4 +15,8 @@ public interface MoveBehavior {
     List<Point> getPath();
 
     void update();
+
+    void denyMove();
+
+    void applyMove();
 }

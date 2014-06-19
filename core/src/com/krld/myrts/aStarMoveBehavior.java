@@ -14,6 +14,7 @@ public class aStarMoveBehavior implements MoveBehavior {
     private static final boolean BREAK_TIES = true;
     private static final int MAX_LENGTH_PATH = 100;
     private static final long WAITING_ASTAR_TIME = 100;
+    private static final int MAX_DENY_MOVES = 4;
     private Unit unit;
     private RTSWorld rtsWorld;
     private PriorityQueue<Node> openNodes;
@@ -22,6 +23,7 @@ public class aStarMoveBehavior implements MoveBehavior {
     private Node startNode;
     private List<Point> path;
     private boolean aStarWorking;
+    private int denyMoves;
 
     @Override
     public void update() {
@@ -46,6 +48,10 @@ public class aStarMoveBehavior implements MoveBehavior {
             runOnPath();
         }*/
         runOnPath();
+        if (denyMoves > MAX_DENY_MOVES) {
+            path = null;
+            denyMoves = 0;
+        }
         if (goalPosition != null && !goalPositionReached(3) && path == null) {
             runAStarCalcInThread();
         }
@@ -53,6 +59,16 @@ public class aStarMoveBehavior implements MoveBehavior {
             goalPosition = null;
             unit.setAction(ActionType.NOTHING);
         }
+    }
+
+    @Override
+    public void denyMove() {
+        denyMoves++;
+    }
+
+    @Override
+    public void applyMove() {
+        denyMoves = 0;
     }
 
     private boolean goalPositionReached(int distance) {
@@ -87,7 +103,7 @@ public class aStarMoveBehavior implements MoveBehavior {
             newPath.add(new Point((unit.getPos().getX() + path.get(0).getX()) / 2, (unit.getPos().getY() + path.get(0).getY()) / 2));
             newPath.addAll(path);
             path = newPath;*/
-           // path.add(0, new Point((unit.getPos().getX() + path.get(0).getX()) / 2, (unit.getPos().getY() + path.get(0).getY()) / 2));
+            // path.add(0, new Point((unit.getPos().getX() + path.get(0).getX()) / 2, (unit.getPos().getY() + path.get(0).getY()) / 2));
         }
         //      if (direction != null)
         unit.setDirection(direction);
@@ -392,7 +408,7 @@ public class aStarMoveBehavior implements MoveBehavior {
             @Override
             public void run() {
                 aStarWorking = true;
-              //  path = null;
+                //  path = null;
                 try {
                     aStarCalc();
                 } catch (Exception e) {

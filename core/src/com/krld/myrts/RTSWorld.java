@@ -11,7 +11,7 @@ import java.util.List;
 public class RTSWorld {
     public static final int CELL_SIZE = 32;
     static final int UNIT_CELL_SIZE_RELATIONS = 4;
-    private static final long DELAY = 20;
+    private static final long DELAY = 100;
     private static final int PASS_MAP = 0;
     private WorldRenderer worldRenderer;
     private MyInputProcessor inputProcessor;

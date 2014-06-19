@@ -24,13 +24,16 @@ public class WorldRenderer {
     private int heightView;
     private int unitCellSize;
     private Texture defaultTexture;
-    private Texture soldierTexture;
+    private Texture soldierDownTexture;
+    private Texture soldierUpTexture;
     private Texture selectRect;
     private Texture stepsTexture;
     private int heightUnits;
     private int widthUnits;
     private BitmapFont font;
     private BitmapFont fontLittle;
+    private Texture soldierRightTexture;
+    private Texture soldierleftTexture;
 
     public boolean isDrawDebug() {
         return drawDebug;
@@ -49,7 +52,7 @@ public class WorldRenderer {
     public void init(WorldView worldView) {
         rtsWorld.getMapManager().loadGdxTextures();
         setWorldView(worldView);
-        camera = new Camera(new Point(0, 0));
+        camera = new Camera(new Point(660, 440));
         renderer = new ShapeRenderer();
         myInputProcessor = worldView.getInputProcessor();
         initColors();
@@ -70,7 +73,10 @@ public class WorldRenderer {
 
     private void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
-        soldierTexture = new Texture(Gdx.files.internal("soldier1.png"));
+        soldierDownTexture = new Texture(Gdx.files.internal("soldier2.png"));
+        soldierUpTexture = new Texture(Gdx.files.internal("soldier2_up.png"));
+        soldierleftTexture = new Texture(Gdx.files.internal("soldier2_left.png"));
+        soldierRightTexture = new Texture(Gdx.files.internal("soldier2_right.png"));
         selectRect = new Texture(Gdx.files.internal("selectRect.png"));
         stepsTexture = new Texture(Gdx.files.internal("steps.png"));
     }
@@ -133,13 +139,14 @@ public class WorldRenderer {
     }
 
     private void drawUnits(SpriteBatch batch, Point cameraPos) {
+
         for (Unit unit : rtsWorld.getUnits()) {
-            Texture texture = defaultTexture;
+            Texture texture = getTextureForUnit(unit);
+            if (texture == null) {
+                texture = defaultTexture;
+            }
             int calcedX = unit.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
             int calcedY = unit.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
-            if (unit.getType().equals(UnitType.SOLDIER)) {
-                texture = soldierTexture;
-            }
             batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
             if (getRtsWorld().getLogicController().getSelectedUnits() != null &&
                     getRtsWorld().getLogicController().getSelectedUnits().contains(unit)) {
@@ -147,6 +154,22 @@ public class WorldRenderer {
             }
         }
 
+    }
+
+    private Texture getTextureForUnit(Unit unit) {
+        Texture texture = null;
+        if (unit.getType().equals(UnitType.SOLDIER)) {
+            if ( unit.getDirection() == null || unit.getDirection().equals(Direction.DOWN) || unit.getDirection() == Direction.SELF) {
+                texture = soldierDownTexture;
+            } else if (unit.getDirection().equals(Direction.UP)) {
+                texture = soldierUpTexture;
+            } else if (unit.getDirection().equals(Direction.LEFT)) {
+                texture = soldierleftTexture;
+            } else if (unit.getDirection().equals(Direction.RIGHT)) {
+                texture = soldierRightTexture;
+            }
+        }
+        return texture;
     }
 
     private void initValues() {
