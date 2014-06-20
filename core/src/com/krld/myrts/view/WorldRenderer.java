@@ -1,4 +1,4 @@
-package com.krld.myrts;
+package com.krld.myrts.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.krld.myrts.model.RTSWorld;
+import com.krld.myrts.controller.AStarMoveBehavior;
+import com.krld.myrts.model.*;
 
 import java.util.List;
 
@@ -34,6 +37,8 @@ public class WorldRenderer {
     private BitmapFont fontLittle;
     private Texture soldierRightTexture;
     private Texture soldierleftTexture;
+    private Point mouseActionPoint;
+    private Texture destMoveTexture;
 
     public boolean isDrawDebug() {
         return drawDebug;
@@ -78,6 +83,7 @@ public class WorldRenderer {
         soldierleftTexture = new Texture(Gdx.files.internal("soldier2_left.png"));
         soldierRightTexture = new Texture(Gdx.files.internal("soldier2_right.png"));
         selectRect = new Texture(Gdx.files.internal("selectRect.png"));
+        destMoveTexture = new Texture(Gdx.files.internal("destMovePoint.png"));
         stepsTexture = new Texture(Gdx.files.internal("steps.png"));
     }
 
@@ -124,6 +130,13 @@ public class WorldRenderer {
                 }
             }
         }
+        if (mouseActionPoint != null) {
+            int calcedX = mouseActionPoint.getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+            int calcedY = mouseActionPoint.getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+            renderer.setColor(Color.GREEN);
+            renderer.rect(calcedX, calcedY, 8, 8);
+        }
+
         renderer.end();
         batch.begin();
         for (Unit unit : rtsWorld.getUnits()) {
@@ -136,6 +149,8 @@ public class WorldRenderer {
                 }
             }
         }
+
+
     }
 
     private void drawUnits(SpriteBatch batch, Point cameraPos) {
@@ -151,6 +166,12 @@ public class WorldRenderer {
             if (getRtsWorld().getLogicController().getSelectedUnits() != null &&
                     getRtsWorld().getLogicController().getSelectedUnits().contains(unit)) {
                 batch.draw(selectRect, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+                Point destPoint = unit.getMoveBehavior().getDestMovePoint();
+                if (destPoint != null) {
+                    calcedX = destPoint.getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+                    calcedY = destPoint.getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+                    batch.draw(destMoveTexture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+                }
             }
         }
 
@@ -159,7 +180,7 @@ public class WorldRenderer {
     private Texture getTextureForUnit(Unit unit) {
         Texture texture = null;
         if (unit.getType().equals(UnitType.SOLDIER)) {
-            if ( unit.getDirection() == null || unit.getDirection().equals(Direction.DOWN) || unit.getDirection() == Direction.SELF) {
+            if (unit.getDirection() == null || unit.getDirection().equals(Direction.DOWN) || unit.getDirection() == Direction.SELF) {
                 texture = soldierDownTexture;
             } else if (unit.getDirection().equals(Direction.UP)) {
                 texture = soldierUpTexture;
@@ -199,7 +220,7 @@ public class WorldRenderer {
             fontLittle.draw(batch, "Action: " + unit.getAction(), UIConstants.UNIT_ACTION.getX(), UIConstants.UNIT_ACTION.getY());
             fontLittle.draw(batch, "Direction: " + unit.getDirection(), UIConstants.UNIT_DIRECTION.getX(), UIConstants.UNIT_DIRECTION.getY());
             fontLittle.draw(batch, "Debug: " + debugString, UIConstants.UNIT_DEBUG.getX(), UIConstants.UNIT_DEBUG.getY());
-        } else if (selectedUnits != null){
+        } else if (selectedUnits != null) {
             fontLittle.draw(batch, "selected " + selectedUnits.size() + " units", UIConstants.UNIT_TYPE.getX(), UIConstants.UNIT_TYPE.getY());
         }
     }
@@ -306,5 +327,13 @@ public class WorldRenderer {
 
     public void setSelectionColor(Color selectionColor) {
         this.selectionColor = selectionColor;
+    }
+
+    public void setMouseActionPoint(Point mouseActionPoint) {
+        this.mouseActionPoint = mouseActionPoint;
+    }
+
+    public Point getMouseActionPoint() {
+        return mouseActionPoint;
     }
 }

@@ -1,4 +1,12 @@
-package com.krld.myrts;
+package com.krld.myrts.controller;
+
+import com.krld.myrts.controller.AStarMoveBehavior;
+import com.krld.myrts.controller.ActionBehaviour;
+import com.krld.myrts.controller.MoveBehavior;
+import com.krld.myrts.model.ActionType;
+import com.krld.myrts.model.Point;
+import com.krld.myrts.model.RTSWorld;
+import com.krld.myrts.model.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +16,7 @@ import java.util.List;
  */
 public class MeleeSoldierBehaviour implements ActionBehaviour {
     private Unit attackedUnit;
+    private int defaultDamage;
 
     public Unit getUnit() {
         return unit;
@@ -40,6 +49,11 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
         } else {
             unit.getMoveBehavior().update();
         }
+    }
+
+    @Override
+    public int getDamageAmount() {
+        return getDefaultDamage();
     }
 
     private void attackingUnit() {
@@ -103,5 +117,13 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
 
     private void meleeAttackUnit() {
         unit.setAction(ActionType.MELEE_ATTACK);
+    }
+
+    public int getDefaultDamage() {
+        return defaultDamage;
+    }
+
+    public void setDefaultDamage(int defaultDamage) {
+        this.defaultDamage = defaultDamage;
     }
 }

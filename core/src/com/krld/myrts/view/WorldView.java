@@ -1,4 +1,4 @@
-package com.krld.myrts;
+package com.krld.myrts.view;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.krld.myrts.model.RTSWorld;
 
 public class WorldView extends ApplicationAdapter {
 	SpriteBatch batch;

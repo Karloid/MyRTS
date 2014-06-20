@@ -1,5 +1,7 @@
-package com.krld.myrts;
+package com.krld.myrts.controller;
 
+
+import com.krld.myrts.model.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +40,20 @@ public class DefaultLogicController implements LogicController {
             if (unit.getAction().equals(ActionType.MOVE)) {
                 unitMove(unit);
             }
+            if (unit.getAction().equals(ActionType.MELEE_ATTACK)) {
+                unitMeleeAttack(unit);
+            }
+        }
+    }
+
+    private void unitMeleeAttack(Unit unit) {
+        if (unit.getAction() != ActionType.MELEE_ATTACK) {
+            return;
+        }
+        Point actionPoint = rtsWorld.getPointOnDirection(unit.getPos(), unit.getDirection());
+        Unit enemy = rtsWorld.getEnemyUnitInPoint(actionPoint, unit.getPlayer());
+        if (enemy != null) {
+            enemy.receiveDamage(unit.getActionBehavior().getDamageAmount());
         }
     }
 

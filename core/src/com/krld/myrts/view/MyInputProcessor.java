@@ -1,14 +1,17 @@
-package com.krld.myrts;
+package com.krld.myrts.view;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.krld.myrts.model.RTSWorld;
+import com.krld.myrts.model.Point;
 
 /**
  * Created by Andrey on 6/16/2014.
  */
 public class MyInputProcessor implements InputProcessor {
+    private static final boolean DEBUG_POINT_MODE = false;
     private WorldView worldView;
-    private com.krld.myrts.RTSWorld RTSWorld;
+    private com.krld.myrts.model.RTSWorld RTSWorld;
 
     public Point getTouchMovePos() {
         return touchMovePos;
@@ -40,26 +43,26 @@ public class MyInputProcessor implements InputProcessor {
 
     private boolean touchDown;
 
-    public MyInputProcessor(RTSWorld rtsWorld) {
+    public MyInputProcessor(com.krld.myrts.model.RTSWorld rtsWorld) {
         setRTSWorld(rtsWorld);
     }
 
     @Override
     public boolean keyDown(int keyCode) {
         if (keyCode == Input.Keys.W) {
-     //       getRTSWorld().getWorldRenderer().getCamera().move(Direction.UP);
+            //       getRTSWorld().getWorldRenderer().getCamera().move(Direction.UP);
             getRTSWorld().getWorldRenderer().getCamera().setMoveUp(true);
         }
         if (keyCode == Input.Keys.S) {
-      //      getRTSWorld().getWorldRenderer().getCamera().move(Direction.DOWN);
+            //      getRTSWorld().getWorldRenderer().getCamera().move(Direction.DOWN);
             getRTSWorld().getWorldRenderer().getCamera().setMoveDown(true);
         }
         if (keyCode == Input.Keys.D) {
-         //   getRTSWorld().getWorldRenderer().getCamera().move(Direction.RIGHT);
+            //   getRTSWorld().getWorldRenderer().getCamera().move(Direction.RIGHT);
             getRTSWorld().getWorldRenderer().getCamera().setMoveRight(true);
         }
         if (keyCode == Input.Keys.A) {
-        //    getRTSWorld().getWorldRenderer().getCamera().move(Direction.LEFT);
+            //    getRTSWorld().getWorldRenderer().getCamera().move(Direction.LEFT);
             getRTSWorld().getWorldRenderer().getCamera().setMoveLeft(true);
         }
 
@@ -83,7 +86,8 @@ public class MyInputProcessor implements InputProcessor {
         }
         if (keyCode == Input.Keys.A) {
             getRTSWorld().getWorldRenderer().getCamera().setMoveLeft(false);
-        }return false;
+        }
+        return false;
     }
 
     @Override
@@ -162,7 +166,18 @@ public class MyInputProcessor implements InputProcessor {
     }
 
     @Override
-    public boolean mouseMoved(int screenX, int screenY) {
+    public boolean mouseMoved(int screenX, int screenY)
+    {
+        if (!DEBUG_POINT_MODE) {
+            return false;
+        }
+        screenY = worldView.getHeigth() - screenY;
+        Point cameraPos = getRTSWorld().getWorldRenderer().getCamera().getPos();
+        int width = getRTSWorld().getWorldRenderer().getWorldView().getWidth();
+        int height = getRTSWorld().getWorldRenderer().getWorldView().getHeigth();
+        Point mouseActionPoint = new Point(calcX(screenX, cameraPos, width), calcY(screenY, cameraPos, height));
+        System.out.println(mouseActionPoint);
+        getRTSWorld().getWorldRenderer().setMouseActionPoint(mouseActionPoint);
         return false;
     }
 

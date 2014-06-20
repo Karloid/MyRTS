@@ -1,6 +1,12 @@
-package com.krld.myrts;
+package com.krld.myrts.model;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.krld.myrts.controller.DefaultLogicController;
+import com.krld.myrts.controller.DefaultUnitFabric;
+import com.krld.myrts.controller.AbsractUnitFabric;
+import com.krld.myrts.controller.LogicController;
+import com.krld.myrts.view.MyInputProcessor;
+import com.krld.myrts.view.WorldRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +16,7 @@ import java.util.List;
  */
 public class RTSWorld {
     public static final int CELL_SIZE = 32;
-    static final int UNIT_CELL_SIZE_RELATIONS = 4;
+    public static final int UNIT_CELL_SIZE_RELATIONS = 4;
     private static final long DELAY = 100;
     private static final int PASS_MAP = 0;
     private WorldRenderer worldRenderer;
@@ -36,8 +42,8 @@ public class RTSWorld {
         setMapManager(new MapManager());
         mapManager.setRtsWorld(this);
         setMap(mapManager.loadMapFromFile("rts1v1.json"));
-      //  setMap(mapManager.loadMapFromFile("river.json"));
-       // setMap(mapManager.loadMapFromFile("test.json"));
+        //  setMap(mapManager.loadMapFromFile("river.json"));
+        // setMap(mapManager.loadMapFromFile("test.json"));
         obstacleMap = mapManager.createObstacleMap();
         logicController = new DefaultLogicController();
         logicController.setRTSWorld(this);
@@ -207,7 +213,7 @@ public class RTSWorld {
         if (point == null) {
             return false;
         }
-        if (inMap(point) && noObstacle(point) && (!unitInPoint(point) || ignoreUnits )) {
+        if (inMap(point) && noObstacle(point) && (!unitInPoint(point) || ignoreUnits)) {
             return true;
         }
         return false;
@@ -242,10 +248,34 @@ public class RTSWorld {
 
     public Unit getEnemyUnitInPoint(Point point, Player requestPlayer) {
         for (Unit unit : units) {
-            if (unit.getPlayer()!= requestPlayer && unit.getPos().equals(point)) {
+            if (unit.getPlayer() != requestPlayer && unit.getPos().equals(point)) {
                 return unit;
             }
         }
         return null;
+    }
+
+    public Point getPointOnDirection(Point point, Direction direction) {
+        point = point.getCopy();
+        if (direction == Direction.SELF) {
+            return point;
+        }
+        if (direction == Direction.LEFT) {
+            point.setX(point.getX() - 1);
+            return point;
+        }
+        if (direction == Direction.RIGHT) {
+            point.setX(point.getX() + 1);
+            return point;
+        }
+        if (direction == Direction.UP) {
+            point.setY(point.getY() + 1);
+            return point;
+        }
+        if (direction == Direction.DOWN) {
+            point.setY(point.getY() - 1);
+            return point;
+        }
+        return point;
     }
 }

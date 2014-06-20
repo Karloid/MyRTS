@@ -1,4 +1,7 @@
-package com.krld.myrts;
+package com.krld.myrts.controller;
+
+import com.krld.myrts.model.Player;
+import com.krld.myrts.model.Unit;
 
 /**
  * Created by Andrey on 6/17/2014.

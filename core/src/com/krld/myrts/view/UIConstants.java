@@ -1,4 +1,6 @@
-package com.krld.myrts;
+package com.krld.myrts.view;
+
+import com.krld.myrts.model.Point;
 
 /**
  * Created by Andrey on 6/18/2014.

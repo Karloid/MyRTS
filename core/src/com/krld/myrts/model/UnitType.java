@@ -1,4 +1,4 @@
-package com.krld.myrts;
+package com.krld.myrts.model;
 
 /**
  * Created by Andrey on 6/17/2014.

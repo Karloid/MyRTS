@@ -1,10 +1,15 @@
-package com.krld.myrts;
+package com.krld.myrts.controller;
+
+import com.krld.myrts.model.Player;
+import com.krld.myrts.model.RTSWorld;
+import com.krld.myrts.model.Unit;
+import com.krld.myrts.model.UnitType;
 
 /**
  * Created by Andrey on 6/17/2014.
  */
 public class DefaultUnitFabric implements AbsractUnitFabric {
-    private com.krld.myrts.RTSWorld rtsWorld;
+    private RTSWorld rtsWorld;
 
     public DefaultUnitFabric(RTSWorld rtsWorld) {
         setRtsWorld(rtsWorld);
@@ -18,6 +23,9 @@ public class DefaultUnitFabric implements AbsractUnitFabric {
         unit.setMoveBehavior(new AStarMoveBehavior());
         unit.setPlayer(player);
         unit.setActionBehavior(new MeleeSoldierBehaviour());
+        unit.setMaxHp(100);
+        unit.setHp(unit.getMaxHp());
+        unit.getActionBehavior().setDefaultDamage(10);
         return unit;
     }
 

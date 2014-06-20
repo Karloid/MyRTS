@@ -1,4 +1,7 @@
-package com.krld.myrts;
+package com.krld.myrts.model;
+
+import com.krld.myrts.controller.ActionBehaviour;
+import com.krld.myrts.controller.MoveBehavior;
 
 /**
  * Created by Andrey on 6/17/2014.
@@ -9,9 +12,21 @@ public class Unit {
     private Player player;
     private Direction direction;
     private ActionType action;
-    private com.krld.myrts.RTSWorld rtsWorld;
-    private int id;
+    private RTSWorld rtsWorld;
+    private final int id;
     private ActionBehaviour actionBehavior;
+    private int maxHp;
+
+    public int getHp() {
+        return hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+
+    private int hp;
 
     public Point getPos() {
         return pos;
@@ -55,7 +70,7 @@ public class Unit {
     }
 
     public void setDestMovePoint(Point point) {
-         getActionBehavior().actionOnPoint(point);
+        getActionBehavior().actionOnPoint(point);
 
     }
 
@@ -103,5 +118,20 @@ public class Unit {
 
     public ActionBehaviour getActionBehavior() {
         return actionBehavior;
+    }
+
+    public void receiveDamage(int damageAmount) {
+        hp -= damageAmount;
+        if (hp < 0) {
+            hp = 0;
+        }
+    }
+
+    public void setMaxHp(int maxHp) {
+        this.maxHp = maxHp;
+    }
+
+    public int getMaxHp() {
+        return maxHp;
     }
 }

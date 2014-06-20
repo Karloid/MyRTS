@@ -1,4 +1,7 @@
-package com.krld.myrts;
+package com.krld.myrts.view;
+
+import com.krld.myrts.model.Direction;
+import com.krld.myrts.model.Point;
 
 /**
  * Created by Andrey on 6/16/2014.

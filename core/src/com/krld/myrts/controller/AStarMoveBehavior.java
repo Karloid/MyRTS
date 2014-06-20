@@ -1,11 +1,17 @@
-package com.krld.myrts;
+package com.krld.myrts.controller;
+
+import com.krld.myrts.model.RTSWorld;
+import com.krld.myrts.model.ActionType;
+import com.krld.myrts.model.Direction;
+import com.krld.myrts.model.Point;
+import com.krld.myrts.model.Unit;
 
 import java.util.*;
 
 /**
  * Created by Andrey on 6/17/2014.
  */
-public class aStarMoveBehavior implements MoveBehavior {
+public class AStarMoveBehavior implements MoveBehavior {
 
     private static final int START_NODE = 1;
     private static final int COMMON_NODE = 0;
@@ -69,6 +75,11 @@ public class aStarMoveBehavior implements MoveBehavior {
     @Override
     public void applyMove() {
         denyMoves = 0;
+    }
+
+    @Override
+    public Point getDestMovePoint() {
+        return goalPosition;
     }
 
     private boolean goalPositionReached(int distance) {
@@ -385,8 +396,8 @@ public class aStarMoveBehavior implements MoveBehavior {
     }
 
     @Override
-    public void setDestMovePoint(Point point) {
-        if (!rtsWorld.canMoveToPoint(point, false)) {
+    public void setDestMovePoint(Point point, boolean ignoreCheckObstaclesAndUnits) {
+        if (!rtsWorld.canMoveToPoint(point, ignoreCheckObstaclesAndUnits)) {
             return;
         }
         goalPosition = point;

@@ -1,4 +1,4 @@
-package com.krld.myrts;
+package com.krld.myrts.model;
 
 import com.badlogic.gdx.graphics.Texture;
 

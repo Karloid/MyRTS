@@ -1,4 +1,8 @@
-package com.krld.myrts;
+package com.krld.myrts.controller;
+
+import com.krld.myrts.model.RTSWorld;
+import com.krld.myrts.model.Point;
+import com.krld.myrts.model.Unit;
 
 import java.util.List;
 
