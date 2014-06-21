@@ -54,6 +54,7 @@ public class DefaultLogicController implements LogicController {
         Unit enemy = rtsWorld.getEnemyUnitInPoint(actionPoint, unit.getPlayer());
         if (enemy != null) {
             enemy.receiveDamage(unit.getActionBehavior().getDamageAmount());
+            fwewef
         }
     }
 
