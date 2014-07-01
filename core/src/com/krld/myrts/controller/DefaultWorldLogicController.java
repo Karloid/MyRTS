@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Andrey on 6/17/2014.
  */
-public class DefaultLogicController implements LogicController {
+public class DefaultWorldLogicController implements WorldLogicController {
     private RTSWorld rtsWorld;
     private List<Unit> selectedUnits;
 
@@ -45,6 +45,7 @@ public class DefaultLogicController implements LogicController {
                     deadUnits = new ArrayList<Unit>();
                 }
                 deadUnits.add(unit);
+                rtsWorld.getCorpses().add(new Corpse(unit.getPos(), unit.getType()));
             }
         }
         if (deadUnits != null) {

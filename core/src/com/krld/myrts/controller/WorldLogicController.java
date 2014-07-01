@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Andrey on 6/17/2014.
  */
-public interface LogicController {
+public interface WorldLogicController {
     void update();
 
     void setRTSWorld(RTSWorld rtsWorld);

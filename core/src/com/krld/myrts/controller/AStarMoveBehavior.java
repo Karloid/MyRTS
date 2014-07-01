@@ -19,7 +19,7 @@ public class AStarMoveBehavior implements MoveBehavior {
     private static final double MOVE_COST = 1;
     private static final boolean BREAK_TIES = true;
     private static final int MAX_LENGTH_PATH = 100;
-    private static final long WAITING_ASTAR_TIME = 100;
+    private static final long WAITING_ASTAR_TIME = 10;
     private static final int MAX_DENY_MOVES = 4;
     private Unit unit;
     private RTSWorld rtsWorld;
@@ -30,6 +30,7 @@ public class AStarMoveBehavior implements MoveBehavior {
     private List<Point> path;
     private boolean aStarWorking;
     private int denyMoves;
+    private Thread runner;
 
     @Override
     public void update() {
@@ -42,6 +43,9 @@ public class AStarMoveBehavior implements MoveBehavior {
             runAStarCalcInThread();
         }
         if (goalPosition != null && goalPositionReached(1)) {
+            if (runner != null) {
+                runner.interrupt();
+            }
             goalPosition = null;
             unit.setAction(ActionType.NOTHING);
         }
@@ -90,18 +94,21 @@ public class AStarMoveBehavior implements MoveBehavior {
             System.out.println(" directions is null");
             // dirt
             path = null;
+            unit.setAction(ActionType.NOTHING);
+            goalPosition = null;
          /*   List<Point> newPath = new ArrayList<Point>();
             newPath.add(new Point((unit.getPos().getX() + path.get(0).getX()) / 2, (unit.getPos().getY() + path.get(0).getY()) / 2));
             newPath.addAll(path);
             path = newPath;*/
             // path.add(0, new Point((unit.getPos().getX() + path.get(0).getX()) / 2, (unit.getPos().getY() + path.get(0).getY()) / 2));
+        } else {
+            //      if (direction != null)
+            unit.setDirection(direction);
         }
-        //      if (direction != null)
-        unit.setDirection(direction);
         // unit.setAction(ActionType.MOVE);
     }
 
-    private void aStarCalc() {
+    private synchronized void aStarCalc() {
 
         closedNodes = new ArrayDeque<Node>();
         openNodes = new PriorityQueue<Node>(300, new Comparator<Node>() {
@@ -117,9 +124,13 @@ public class AStarMoveBehavior implements MoveBehavior {
             }
         });
         startNode = new Node(unit.getPos(), START_NODE);
+        if (startNode == null) {
+            return;
+        }
         calcF(startNode);
         openNodes.add(startNode);
-        while (!openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
+        assert (openNodes != null);
+        while (goalPosition != null && !openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
             Node current = openNodes.peek();
             openNodes.remove(current);
             closedNodes.add(current);
@@ -155,7 +166,11 @@ public class AStarMoveBehavior implements MoveBehavior {
                 break;
             }
         }
+        Point lastPoint = path.get(0);
         Collections.reverse(path);
+        if (goalPosition == null || getManhattanDistance(path.get(0), goalPosition) < getManhattanDistance(lastPoint, goalPosition)) {
+            path = null;
+        }
     }
 
     private List<Node> getNeighbors(Node node) {
@@ -202,6 +217,9 @@ public class AStarMoveBehavior implements MoveBehavior {
     }
 
     private void calcF(Node node) {
+        if (Thread.interrupted()) {
+            return;
+        }
         double heuristik = getManhattanDistance(node.getPosition(), goalPosition, true);
         double pathCost = (node.getParent() == null ? 0 : node.getParent().getG() + MOVE_COST);
         double f = heuristik + pathCost;
@@ -211,38 +229,17 @@ public class AStarMoveBehavior implements MoveBehavior {
     }
 
     private void sortOpenNodes() {
-      /*  Collections.sort(openNodes, new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) {
-                if (o1.getF() < o2.getF()) {
-                    return -1;
-                } else if (o1.getF() == o2.getF()) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
-        });*/
     }
 
-/*    private Point pickGoalPosition() {
-        if (unit.getDestination() == AntDestination.FROM_NEST) {
-            Double minDistantce = null;
-            WayPoint pickedWayPoint = null;
-            for (WayPoint wayPoint : rtsWorld.getWayPoints()) {
-                if ((minDistantce == null || getManhattanDistance(unit.getPosition(), wayPoint.getPosition()) < minDistantce) && Math.random() > RANDOM_WAY_RATIO) {
-                    minDistantce = getManhattanDistance(unit.getPosition(), wayPoint.getPosition());
-                    pickedWayPoint = wayPoint;
-                }
-            }
-            return pickedWayPoint.getPosition().getCopy();
-        } else if (unit.getDestination() == AntDestination.TO_NEST) {
-            return unit.getNest().getPosition();
-        }
-        return new Point(10, 10);
-    }*/
-
     public double getManhattanDistance(Point position, Point position1, boolean breakTiesParam) {
+   /*     assert (position != null);
+        assert (position1 != null);*/
+        if (position == null) {
+            return 0;
+        }
+        if (position1 == null) {
+            return 0;
+        }
         double dx = Math.abs(position.getX() - position1.getX());
         double dy = Math.abs(position.getY() - position1.getY());
         if (breakTiesParam && BREAK_TIES && startNode != null) {
@@ -396,27 +393,36 @@ public class AStarMoveBehavior implements MoveBehavior {
     }
 
     private void runAStarCalcInThread() {
-        while (aStarWorking) {
-            try {
-                Thread.sleep(WAITING_ASTAR_TIME);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        Thread runner = new Thread(new Runnable() {
+        if (aStarWorking) return;
+        Thread waitAndStartAStar = new Thread(new Runnable() {
+
             @Override
             public void run() {
-                aStarWorking = true;
-                //  path = null;
-                try {
-                    aStarCalc();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                while (aStarWorking) {
+                    try {
+                        Thread.sleep(WAITING_ASTAR_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                aStarWorking = false;
+                runner = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        aStarWorking = true;
+                        //  path = null;
+                        try {
+                            aStarCalc();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        aStarWorking = false;
+                    }
+                });
+                runner.start();
             }
         });
-        runner.start();
+        waitAndStartAStar.start();
+
 
     }
 

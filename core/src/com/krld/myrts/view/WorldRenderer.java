@@ -94,10 +94,23 @@ public class WorldRenderer {
         initValues();
         drawBackground(batch);
         drawTiles(batch, camera.getPos());
+        drawCorpses(batch, camera.getPos());
         drawUnits(batch, camera.getPos());
         drawGrid(batch, camera.getPos());
         drawPaths(batch, camera.getPos());
         drawUI(batch, camera.getPos());
+    }
+
+    private void drawCorpses(SpriteBatch batch, Point cameraPos) {
+        for (Corpse corpse : rtsWorld.getCorpses()) {
+            Texture texture = tC.getTextureForCorpse(corpse.getType());
+            if (texture == null) {
+                texture = tC.defaultTexture;
+            }
+            int calcedX = corpse.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+            int calcedY = corpse.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+            batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+        }
     }
 
     private void drawPaths(SpriteBatch batch, Point cameraPos) {
@@ -181,8 +194,8 @@ public class WorldRenderer {
     }
 
     private void drawDestPoint(SpriteBatch batch, Point cameraPos, Unit unit, int calcedX, int calcedY) {
-        if (getRtsWorld().getLogicController().getSelectedUnits() != null &&
-                getRtsWorld().getLogicController().getSelectedUnits().contains(unit)) {
+        if (getRtsWorld().getWorldLogicController().getSelectedUnits() != null &&
+                getRtsWorld().getWorldLogicController().getSelectedUnits().contains(unit)) {
             batch.draw(tC.selectRect, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
             Point destPoint = unit.getMoveBehavior().getDestMovePoint();
             if (destPoint != null) {
@@ -208,7 +221,7 @@ public class WorldRenderer {
     }
 
     private void drawUnitInfo(SpriteBatch batch) {
-        List<Unit> selectedUnits = rtsWorld.getLogicController().getSelectedUnits();
+        List<Unit> selectedUnits = rtsWorld.getWorldLogicController().getSelectedUnits();
         boolean oneUnitSelected = selectedUnits != null && selectedUnits.size() == 1;
         if (oneUnitSelected) {
             Unit unit = selectedUnits.get(0);

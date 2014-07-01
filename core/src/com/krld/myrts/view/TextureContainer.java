@@ -18,6 +18,7 @@ public class TextureContainer {
     public Texture selectRect;
     public Texture destMoveTexture;
     public Texture stepsTexture;
+    private Texture soldierCorpseTexture;
 
     public void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
@@ -28,6 +29,7 @@ public class TextureContainer {
         selectRect = new Texture(Gdx.files.internal("selectRect.png"));
         destMoveTexture = new Texture(Gdx.files.internal("destMovePoint.png"));
         stepsTexture = new Texture(Gdx.files.internal("steps.png"));
+        soldierCorpseTexture = new Texture(Gdx.files.internal("soldier2_dead.png"));
     }
 
     public Texture getTextureForUnit(Unit unit) {
@@ -44,5 +46,12 @@ public class TextureContainer {
             }
         }
         return texture;
+    }
+
+    public Texture getTextureForCorpse(UnitType type) {
+        if (type == UnitType.SOLDIER) {
+            return soldierCorpseTexture;
+        }
+        return null;
     }
 }

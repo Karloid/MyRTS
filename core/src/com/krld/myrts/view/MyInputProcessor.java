@@ -108,7 +108,7 @@ public class MyInputProcessor implements InputProcessor {
         Point cameraPos = getRTSWorld().getWorldRenderer().getCamera().getPos();
         int width = getRTSWorld().getWorldRenderer().getWorldView().getWidth();
         int height = getRTSWorld().getWorldRenderer().getWorldView().getHeigth();
-        getRTSWorld().getLogicController().mouseAction(new Point(calcX(screenX, cameraPos, width), calcY(screenY, cameraPos, height)));
+        getRTSWorld().getWorldLogicController().mouseAction(new Point(calcX(screenX, cameraPos, width), calcY(screenY, cameraPos, height)));
     }
 
     private void createSelectionRectangle(int screenX, int screenY) {
@@ -140,7 +140,7 @@ public class MyInputProcessor implements InputProcessor {
         yMin = calcY(yMin, cameraPos, height);
         xMax = calcX(xMax, cameraPos, width);
         yMax = calcY(yMax, cameraPos, height);
-        getRTSWorld().getLogicController().selectUnits(new Point(xMin, yMin), new Point(xMax, yMax));
+        getRTSWorld().getWorldLogicController().selectUnits(new Point(xMin, yMin), new Point(xMax, yMax));
     }
 
     private int calcX(int x, Point cameraPos, int width) {

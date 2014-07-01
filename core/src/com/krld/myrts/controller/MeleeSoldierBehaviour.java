@@ -14,7 +14,7 @@ import java.util.List;
 public class MeleeSoldierBehaviour implements ActionBehaviour {
     private Unit attackedUnit;
     private int defaultDamage;
-    private double findEnemyDistance = 7;
+    private double findEnemyDistance = 15;
 
     public Unit getUnit() {
         return unit;
@@ -43,6 +43,7 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
     @Override
     public void update() {
         if (attackedUnit != null) {
+            findAndAttackNearbyEnemy();
             attackingUnit();
 
         } else {
@@ -65,7 +66,8 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
                 }
             }
         }
-        attackedUnit = candidatUnit;
+        if (candidatUnit != null)
+            attackedUnit = candidatUnit;
     }
 
     @Override
@@ -80,7 +82,8 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
             return;
         }
         MoveBehavior moveBehavior = unit.getMoveBehavior();
-        if (((AStarMoveBehavior) moveBehavior).getManhattanDistance(attackedUnit.getPos(), unit.getPos(), false) == 1) {
+        if (((AStarMoveBehavior) moveBehavior).getManhattanDistance(attackedUnit.getPos(),
+                unit.getPos(), false) == 1) {
             meleeAttackUnit(attackedUnit);
         } else {
             goToAttackedUnit(moveBehavior);
@@ -88,16 +91,33 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
     }
 
     private void goToAttackedUnit(MoveBehavior moveBehavior) {
-        if (moveBehavior.getDestMovePoint() == null || !moveBehavior.getDestMovePoint().equals(getClosestOpenPointToAttackedUnit())) {
+        if (moveBehavior.getDestMovePoint() == null ||
+                !moveBehavior.getDestMovePoint().equals(getClosestOpenPointToAttackedUnit())) {
             Point closestPoint = getClosestOpenPointToAttackedUnit();
             if (closestPoint == null) {
                 attackedUnit = null;
                 return;
             }
+            moveBehavior.update();
             moveBehavior.setDestMovePoint(closestPoint, false);
         } else {
-            moveBehavior.update();
+         //   if (validePathPicked()) {
+                moveBehavior.update();
+         //   }
         }
+    }
+
+    private boolean validePathPicked() {
+        List<Point> path = unit.getMoveBehavior().getPath();
+        if (path == null) {
+            return true;
+        }
+        Point lastPointPath = path.get(path.size() - 1);
+        if (AStarMoveBehavior.getManhattanDistance(unit.getPos(), attackedUnit.getPos()) <=
+                (AStarMoveBehavior.getManhattanDistance(lastPointPath, attackedUnit.getPos()))) {
+            return false;
+        }
+        return true;
     }
 
     private Point getClosestOpenPointToAttackedUnit() {

@@ -1,10 +1,10 @@
 package com.krld.myrts.model;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.krld.myrts.controller.DefaultLogicController;
+import com.krld.myrts.controller.DefaultWorldLogicController;
 import com.krld.myrts.controller.DefaultUnitFabric;
 import com.krld.myrts.controller.AbsractUnitFabric;
-import com.krld.myrts.controller.LogicController;
+import com.krld.myrts.controller.WorldLogicController;
 import com.krld.myrts.view.MyInputProcessor;
 import com.krld.myrts.view.WorldRenderer;
 
@@ -26,13 +26,14 @@ public class RTSWorld {
     private int[][] map;
     private int unitCellSize;
     private Thread runner;
-    private LogicController logicController;
+    private WorldLogicController worldLogicController;
     private List<Unit> units;
     private AbsractUnitFabric unitFabric;
     private Player humanPlayer;
     private List<Player> players;
     private Player CPUPlayer;
     private int[][] obstacleMap;
+    private List<Corpse> corpses;
 
     public RTSWorld() {
         setCellSize(CELL_SIZE);
@@ -45,8 +46,8 @@ public class RTSWorld {
         //  setMap(mapManager.loadMapFromFile("river.json"));
         // setMap(mapManager.loadMapFromFile("test.json"));
         obstacleMap = mapManager.createObstacleMap();
-        logicController = new DefaultLogicController();
-        logicController.setRTSWorld(this);
+        worldLogicController = new DefaultWorldLogicController();
+        worldLogicController.setRTSWorld(this);
         initContainers();
     }
 
@@ -57,17 +58,33 @@ public class RTSWorld {
         players.add(new Player("CPU"));
         setCPUPlayer(players.get(1));
 
+        corpses = new ArrayList<Corpse>();
         initUnits();
     }
 
     private void initUnits() {
         unitFabric = new DefaultUnitFabric(this);
         units = new ArrayList<Unit>();
-        addTestUnits();
+        //  addTestUnitsTwo();
+        //  addTestUnits();
+        addTestUnitsRandom(10, 6, 15, 15, getHumanPlayer());
+        addTestUnitsRandom(10, 6, 20, 20, getCPUPlayer());
+    }
+
+    private void addTestUnitsRandom(double delta, int n, double x, double y, Player player) {
+        for (int i = 0; i < n; i++) {
+            addUnitIfCan(unitFabric.createSoldier((int) (x + Math.random() * delta), (int) (y + Math.random() * delta), player));
+        }
+    }
+
+    private void addTestUnitsTwo() {
+        units.add(unitFabric.createSoldier(7, 3, getHumanPlayer()));
+        units.add(unitFabric.createSoldier(2, 5, getHumanPlayer()));
+        units.add(unitFabric.createSoldier(15, 15, getCPUPlayer()));
     }
 
     private void addTestUnits() {
-        units.add(unitFabric.createSoldier(3, 3, getHumanPlayer()));
+
         units.add(unitFabric.createSoldier(8, 5, getHumanPlayer()));
         units.add(unitFabric.createSoldier(4, 7, getHumanPlayer()));
         units.add(unitFabric.createSoldier(1, 3, getHumanPlayer()));
@@ -84,6 +101,12 @@ public class RTSWorld {
         units.add(unitFabric.createSoldier(21, 25, getCPUPlayer()));
         units.add(unitFabric.createSoldier(23, 26, getCPUPlayer()));
         units.add(unitFabric.createSoldier(17, 20, getCPUPlayer()));
+    }
+
+    private void addUnitIfCan(Unit unit) {
+        if (noObstacle(unit.getPos())) {
+            units.add(unit);
+        }
     }
 
     public WorldRenderer getWorldRenderer() {
@@ -116,7 +139,7 @@ public class RTSWorld {
     }
 
     private void update() {
-        logicController.update();
+        worldLogicController.update();
     }
 
     public MyInputProcessor getInputProcessor() {
@@ -168,8 +191,8 @@ public class RTSWorld {
         return units;
     }
 
-    public LogicController getLogicController() {
-        return logicController;
+    public WorldLogicController getWorldLogicController() {
+        return worldLogicController;
     }
 
     public Player getHumanPlayer() {
@@ -281,5 +304,13 @@ public class RTSWorld {
             return point;
         }
         return point;
+    }
+
+    public List<Corpse> getCorpses() {
+        return corpses;
+    }
+
+    public void setCorpses(List<Corpse> corpses) {
+        this.corpses = corpses;
     }
 }
