@@ -50,19 +50,15 @@ public class MyInputProcessor implements InputProcessor {
     @Override
     public boolean keyDown(int keyCode) {
         if (keyCode == Input.Keys.W) {
-            //       getRTSWorld().getWorldRenderer().getCamera().move(Direction.UP);
             getRTSWorld().getWorldRenderer().getCamera().setMoveUp(true);
         }
         if (keyCode == Input.Keys.S) {
-            //      getRTSWorld().getWorldRenderer().getCamera().move(Direction.DOWN);
             getRTSWorld().getWorldRenderer().getCamera().setMoveDown(true);
         }
         if (keyCode == Input.Keys.D) {
-            //   getRTSWorld().getWorldRenderer().getCamera().move(Direction.RIGHT);
             getRTSWorld().getWorldRenderer().getCamera().setMoveRight(true);
         }
         if (keyCode == Input.Keys.A) {
-            //    getRTSWorld().getWorldRenderer().getCamera().move(Direction.LEFT);
             getRTSWorld().getWorldRenderer().getCamera().setMoveLeft(true);
         }
 

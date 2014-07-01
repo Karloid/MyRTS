@@ -29,6 +29,11 @@ public class DefaultUnitFabric implements AbsractUnitFabric {
         return unit;
     }
 
+    @Override
+    public Unit createWorker(int x, int y, Player player) {
+        return null;
+    }
+
     public void setRtsWorld(RTSWorld rtsWorld) {
         this.rtsWorld = rtsWorld;
     }

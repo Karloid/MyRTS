@@ -17,6 +17,9 @@ import java.util.List;
  */
 public class WorldRenderer {
     private static final float LINE_WIDTH = 5;
+    private static final float HP_BAR_HEIGHT = 3;
+    private static final Color ALLIES_UNIT_COLOR = Color.GREEN;
+    private static final Color ENEMY_COLOR = Color.RED;
     private RTSWorld rtsWorld;
     private WorldView worldView;
     private Camera camera;
@@ -26,19 +29,12 @@ public class WorldRenderer {
     private int widthView;
     private int heightView;
     private int unitCellSize;
-    private Texture defaultTexture;
-    private Texture soldierDownTexture;
-    private Texture soldierUpTexture;
-    private Texture selectRect;
-    private Texture stepsTexture;
     private int heightUnits;
     private int widthUnits;
     private BitmapFont font;
     private BitmapFont fontLittle;
-    private Texture soldierRightTexture;
-    private Texture soldierleftTexture;
     private Point mouseActionPoint;
-    private Texture destMoveTexture;
+    private TextureContainer tC;
 
     public boolean isDrawDebug() {
         return drawDebug;
@@ -77,14 +73,9 @@ public class WorldRenderer {
     }
 
     private void initTextures() {
-        defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
-        soldierDownTexture = new Texture(Gdx.files.internal("soldier2.png"));
-        soldierUpTexture = new Texture(Gdx.files.internal("soldier2_up.png"));
-        soldierleftTexture = new Texture(Gdx.files.internal("soldier2_left.png"));
-        soldierRightTexture = new Texture(Gdx.files.internal("soldier2_right.png"));
-        selectRect = new Texture(Gdx.files.internal("selectRect.png"));
-        destMoveTexture = new Texture(Gdx.files.internal("destMovePoint.png"));
-        stepsTexture = new Texture(Gdx.files.internal("steps.png"));
+        tC = new TextureContainer();
+        tC.initTextures();
+
     }
 
     private void initColors() {
@@ -145,7 +136,7 @@ public class WorldRenderer {
                 for (Point point : path) {
                     int calcedX = point.getX() * unitCellSize - cameraPos.getX() + widthView / 2;
                     int calcedY = point.getY() * unitCellSize - cameraPos.getY() + heightView / 2;
-                    batch.draw(stepsTexture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+                    batch.draw(tC.stepsTexture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
                 }
             }
         }
@@ -156,42 +147,52 @@ public class WorldRenderer {
     private void drawUnits(SpriteBatch batch, Point cameraPos) {
 
         for (Unit unit : rtsWorld.getUnits()) {
-            Texture texture = getTextureForUnit(unit);
+            Texture texture = tC.getTextureForUnit(unit);
             if (texture == null) {
-                texture = defaultTexture;
+                texture = tC.defaultTexture;
             }
             int calcedX = unit.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
             int calcedY = unit.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
             batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
-            if (getRtsWorld().getLogicController().getSelectedUnits() != null &&
-                    getRtsWorld().getLogicController().getSelectedUnits().contains(unit)) {
-                batch.draw(selectRect, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
-                Point destPoint = unit.getMoveBehavior().getDestMovePoint();
-                if (destPoint != null) {
-                    calcedX = destPoint.getX() * unitCellSize - cameraPos.getX() + widthView / 2;
-                    calcedY = destPoint.getY() * unitCellSize - cameraPos.getY() + heightView / 2;
-                    batch.draw(destMoveTexture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
-                }
-            }
+            drawDestPoint(batch, cameraPos, unit, calcedX, calcedY);
+            drawHpBar(batch, cameraPos, unit, calcedX, calcedY);
         }
 
     }
 
-    private Texture getTextureForUnit(Unit unit) {
-        Texture texture = null;
-        if (unit.getType().equals(UnitType.SOLDIER)) {
-            if (unit.getDirection() == null || unit.getDirection().equals(Direction.DOWN) || unit.getDirection() == Direction.SELF) {
-                texture = soldierDownTexture;
-            } else if (unit.getDirection().equals(Direction.UP)) {
-                texture = soldierUpTexture;
-            } else if (unit.getDirection().equals(Direction.LEFT)) {
-                texture = soldierleftTexture;
-            } else if (unit.getDirection().equals(Direction.RIGHT)) {
-                texture = soldierRightTexture;
+    private void drawHpBar(SpriteBatch batch, Point cameraPos, Unit unit, int calcedX, int calcedY) {
+        batch.end();
+        renderer.begin(ShapeRenderer.ShapeType.Filled);
+        int hpBarWidth = unitCellSize * 2;
+        float hpBarY = calcedY + unitCellSize * 1.5f;
+        int hpBarX = calcedX - unitCellSize / 2;
+
+        renderer.setColor(Color.BLACK);
+        renderer.rect(hpBarX - 1, hpBarY - 1, hpBarWidth + 2, HP_BAR_HEIGHT + 2);
+        if (unit.getPlayer() == rtsWorld.getHumanPlayer()) {
+            renderer.setColor(ALLIES_UNIT_COLOR);
+        } else {
+            renderer.setColor(ENEMY_COLOR);
+        }
+        hpBarWidth = hpBarWidth * unit.getHp() / unit.getMaxHp();
+        renderer.rect(hpBarX, hpBarY, hpBarWidth, HP_BAR_HEIGHT);
+        renderer.end();
+        batch.begin();
+    }
+
+    private void drawDestPoint(SpriteBatch batch, Point cameraPos, Unit unit, int calcedX, int calcedY) {
+        if (getRtsWorld().getLogicController().getSelectedUnits() != null &&
+                getRtsWorld().getLogicController().getSelectedUnits().contains(unit)) {
+            batch.draw(tC.selectRect, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+            Point destPoint = unit.getMoveBehavior().getDestMovePoint();
+            if (destPoint != null) {
+                calcedX = destPoint.getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+                calcedY = destPoint.getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+                batch.draw(tC.destMoveTexture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
             }
         }
-        return texture;
     }
+
 
     private void initValues() {
         heightView = getWorldView().getHeigth();

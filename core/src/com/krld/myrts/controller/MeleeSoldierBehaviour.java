@@ -3,10 +3,7 @@ package com.krld.myrts.controller;
 import com.krld.myrts.controller.AStarMoveBehavior;
 import com.krld.myrts.controller.ActionBehaviour;
 import com.krld.myrts.controller.MoveBehavior;
-import com.krld.myrts.model.ActionType;
-import com.krld.myrts.model.Point;
-import com.krld.myrts.model.RTSWorld;
-import com.krld.myrts.model.Unit;
+import com.krld.myrts.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +56,7 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
     private void attackingUnit() {
         MoveBehavior moveBehavior = unit.getMoveBehavior();
         if (((AStarMoveBehavior) moveBehavior).getManhattanDistance(attackedUnit.getPos(), unit.getPos(), false) == 1) {
-            meleeAttackUnit();
+            meleeAttackUnit(attackedUnit);
         } else {
             goToAttackedUnit(moveBehavior);
         }
@@ -115,7 +112,9 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
         return availablePointsToMove;
     }
 
-    private void meleeAttackUnit() {
+    private void meleeAttackUnit(Unit attackedUnit) {
+        Direction direction = rtsWorld.getDirectionByPoints(unit.getPos(), attackedUnit.getPos());
+        unit.setDirection(direction);
         unit.setAction(ActionType.MELEE_ATTACK);
     }
 

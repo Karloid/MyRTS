@@ -8,4 +8,5 @@ import com.krld.myrts.model.Unit;
  */
 public interface AbsractUnitFabric {
     Unit createSoldier(int x, int y, Player player);
+    Unit createWorker(int x, int y, Player player);
 }
