@@ -9,6 +9,7 @@ import com.krld.myrts.view.MyInputProcessor;
 import com.krld.myrts.view.WorldRenderer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -65,10 +66,11 @@ public class RTSWorld {
     private void initUnits() {
         unitFabric = new DefaultUnitFabric(this);
         units = new ArrayList<Unit>();
+        units = Collections.synchronizedList(units);
         //  addTestUnitsTwo();
         //  addTestUnits();
-        addTestUnitsRandom(10, 6, 15, 15, getHumanPlayer());
-        addTestUnitsRandom(10, 6, 20, 20, getCPUPlayer());
+        addTestUnitsRandom(10, 100, 35, 35, getHumanPlayer());
+        addTestUnitsRandom(10, 100, 55, 55, getCPUPlayer());
     }
 
     private void addTestUnitsRandom(double delta, int n, double x, double y, Player player) {

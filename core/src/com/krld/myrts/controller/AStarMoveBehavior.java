@@ -21,6 +21,7 @@ public class AStarMoveBehavior implements MoveBehavior {
     private static final int MAX_LENGTH_PATH = 100;
     private static final long WAITING_ASTAR_TIME = 10;
     private static final int MAX_DENY_MOVES = 4;
+    private static final int MAX_CLOSE_NODES_COUNT = 50;
     private Unit unit;
     private RTSWorld rtsWorld;
     private PriorityQueue<Node> openNodes;
@@ -130,7 +131,10 @@ public class AStarMoveBehavior implements MoveBehavior {
         calcF(startNode);
         openNodes.add(startNode);
         assert (openNodes != null);
-        while (goalPosition != null && !openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
+        while (goalPosition != null && !openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)){
+            if (closedNodes.size() > MAX_CLOSE_NODES_COUNT) {
+                break;
+            }
             Node current = openNodes.peek();
             openNodes.remove(current);
             closedNodes.add(current);
