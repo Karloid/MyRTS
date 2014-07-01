@@ -33,26 +33,6 @@ public class AStarMoveBehavior implements MoveBehavior {
 
     @Override
     public void update() {
-        //    System.out.println("AStar update");
-        //    if (true) return;
-/*        if (goalPosition == null || unit.getPos().equals(goalPosition) || unit.getPos().equals(path.get(path.size() - 1))) {
-            if (unit.getPos().equals(goalPosition)) {
-        *//*        if (unit.getDestination() == AntDestination.TO_NEST) {
-                    unit.setDestination(AntDestination.FROM_NEST);
-                    unit.getNest().antArrive(unit);
-                } else {
-                    unit.setDestination(AntDestination.TO_NEST);
-                    WayPoint wayPoint = rtsWorld.getWayPointByPosition(unit.getPosition());
-                    if (wayPoint != null)
-                        wayPoint.antArrive(unit);
-                }*//*
-            }
-            //  goalPosition = pickGoalPosition();
-            //    aStarCalc();
-            runOnPath();
-        } else {
-            runOnPath();
-        }*/
         runOnPath();
         if (denyMoves > MAX_DENY_MOVES) {
             path = null;
@@ -277,6 +257,13 @@ public class AStarMoveBehavior implements MoveBehavior {
         }
     }
 
+    public static double getManhattanDistance(Point position, Point position1) {
+        double dx = Math.abs(position.getX() - position1.getX());
+        double dy = Math.abs(position.getY() - position1.getY());
+
+        return MOVE_COST * (dx + dy);
+    }
+
     @Override
     public void setRtsWorld(RTSWorld rtsWorld) {
         this.rtsWorld = rtsWorld;
@@ -393,6 +380,7 @@ public class AStarMoveBehavior implements MoveBehavior {
                 count++;
             }
         }
+
     }
 
     @Override

@@ -24,6 +24,7 @@ public class DefaultLogicController implements LogicController {
             unit.update();
         }
         applyUnitsAction();
+        removeDeadUnits();
         Collections.sort(rtsWorld.getUnits(), (Unit o1, Unit o2) -> {
             if (o1.getPos().getY() > o2.getPos().getY()) {
                 return -1;
@@ -33,6 +34,22 @@ public class DefaultLogicController implements LogicController {
             }
             return 0;
         });
+
+    }
+
+    private void removeDeadUnits() {
+        ArrayList<Unit> deadUnits = null;
+        for (Unit unit : rtsWorld.getUnits()) {
+            if (unit.isDead()) {
+                if (deadUnits == null) {
+                    deadUnits = new ArrayList<Unit>();
+                }
+                deadUnits.add(unit);
+            }
+        }
+        if (deadUnits != null) {
+            rtsWorld.getUnits().removeAll(deadUnits);
+        }
     }
 
     private void applyUnitsAction() {
@@ -54,7 +71,7 @@ public class DefaultLogicController implements LogicController {
         Unit enemy = rtsWorld.getEnemyUnitInPoint(actionPoint, unit.getPlayer());
         if (enemy != null) {
             enemy.receiveDamage(unit.getActionBehavior().getDamageAmount());
-     //       fwewef
+            //       fwewef
         }
     }
 
@@ -85,7 +102,7 @@ public class DefaultLogicController implements LogicController {
         for (Unit unit : rtsWorld.getUnits()) {
             Point pos = unit.getPos();
             if (unit.getPlayer() == rtsWorld.getHumanPlayer() && pos.getX() >= minPoint.getX() && pos.getX() <= maxPoint.getX() &&
-                    pos.getY() >= minPoint.getY() && pos.getY() <= maxPoint.getY() ) {
+                    pos.getY() >= minPoint.getY() && pos.getY() <= maxPoint.getY()) {
                 selectedUnits.add(unit);
             }
         }

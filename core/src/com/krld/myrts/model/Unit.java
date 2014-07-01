@@ -134,4 +134,8 @@ public class Unit {
     public int getMaxHp() {
         return maxHp;
     }
+
+    public boolean isDead() {
+        return hp <= 0;
+    }
 }

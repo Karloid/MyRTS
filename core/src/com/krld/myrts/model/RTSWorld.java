@@ -80,6 +80,10 @@ public class RTSWorld {
         units.add(unitFabric.createSoldier(5, 17, getHumanPlayer()));
 
         units.add(unitFabric.createSoldier(20, 20, getCPUPlayer()));
+        units.add(unitFabric.createSoldier(23, 22, getCPUPlayer()));
+        units.add(unitFabric.createSoldier(21, 25, getCPUPlayer()));
+        units.add(unitFabric.createSoldier(23, 26, getCPUPlayer()));
+        units.add(unitFabric.createSoldier(17, 20, getCPUPlayer()));
     }
 
     public WorldRenderer getWorldRenderer() {

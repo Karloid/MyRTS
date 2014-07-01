@@ -14,6 +14,7 @@ import java.util.List;
 public class MeleeSoldierBehaviour implements ActionBehaviour {
     private Unit attackedUnit;
     private int defaultDamage;
+    private double findEnemyDistance = 7;
 
     public Unit getUnit() {
         return unit;
@@ -43,9 +44,28 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
     public void update() {
         if (attackedUnit != null) {
             attackingUnit();
+
         } else {
             unit.getMoveBehavior().update();
         }
+        if (!unit.getAction().equals(ActionType.NOTHING)) {
+            return;
+        }
+        findAndAttackNearbyEnemy();
+
+    }
+
+    private void findAndAttackNearbyEnemy() {
+        Unit candidatUnit = null;
+        for (Unit curUnit : rtsWorld.getUnits()) {
+            if (curUnit.getPlayer() != unit.getPlayer()) {
+                if (AStarMoveBehavior.getManhattanDistance(unit.getPos(), curUnit.getPos()) < getFindEnemyDistance()
+                        && (candidatUnit == null || AStarMoveBehavior.getManhattanDistance(unit.getPos(), candidatUnit.getPos()) < getFindEnemyDistance())) {
+                    candidatUnit = curUnit;
+                }
+            }
+        }
+        attackedUnit = candidatUnit;
     }
 
     @Override
@@ -54,6 +74,11 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
     }
 
     private void attackingUnit() {
+        if (attackedUnit.isDead()) {
+            attackedUnit = null;
+            unit.setAction(ActionType.NOTHING);
+            return;
+        }
         MoveBehavior moveBehavior = unit.getMoveBehavior();
         if (((AStarMoveBehavior) moveBehavior).getManhattanDistance(attackedUnit.getPos(), unit.getPos(), false) == 1) {
             meleeAttackUnit(attackedUnit);
@@ -124,5 +149,13 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
 
     public void setDefaultDamage(int defaultDamage) {
         this.defaultDamage = defaultDamage;
+    }
+
+    public double getFindEnemyDistance() {
+        return findEnemyDistance;
+    }
+
+    public void setFindEnemyDistance(double findEnemyDistance) {
+        this.findEnemyDistance = findEnemyDistance;
     }
 }
