@@ -66,4 +66,5 @@ public class Point {
 
         return 1 * (dx + dy);
     }
+
 }

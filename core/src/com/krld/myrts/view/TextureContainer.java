@@ -24,6 +24,7 @@ public class TextureContainer {
     private Texture undeadSoldierLeft;
     private Texture undeadSoldierRight;
     private Texture undeadSoldierCorpse;
+    private Texture trooperUp;
 
     public void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
@@ -42,6 +43,7 @@ public class TextureContainer {
         undeadSoldierRight = new Texture(Gdx.files.internal("undead_soldier_right.png"));
         undeadSoldierCorpse = new Texture(Gdx.files.internal("undead_soldier_dead.png"));
 
+        trooperUp = new Texture(Gdx.files.internal("trooper.png"));
     }
 
     public Texture getTextureForUnit(Unit unit) {
@@ -67,6 +69,18 @@ public class TextureContainer {
                 texture = undeadSoldierLeft;
             } else if (unit.getDirection().equals(Direction.RIGHT)) {
                 texture = undeadSoldierRight;
+            }
+        }
+
+        if (unit.getType().equals(UnitType.TROOPER)) {
+            if (unit.getDirection() == null || unit.getDirection().equals(Direction.DOWN) || unit.getDirection() == Direction.SELF) {
+                texture = trooperUp;
+            } else if (unit.getDirection().equals(Direction.UP)) {
+                texture = soldierUpTexture;
+            } else if (unit.getDirection().equals(Direction.LEFT)) {
+                texture = soldierleftTexture;
+            } else if (unit.getDirection().equals(Direction.RIGHT)) {
+                texture = soldierRightTexture;
             }
         }
 

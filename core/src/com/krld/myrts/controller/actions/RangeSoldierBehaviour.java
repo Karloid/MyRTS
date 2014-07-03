@@ -10,17 +10,22 @@ import com.krld.myrts.model.Unit;
  * Created by Andrey on 7/3/2014.
  */
 public class RangeSoldierBehaviour implements ActionBehaviour {
+    private State state;
+    private State attackTargetState;
     private final IdleState idleState;
     private final MoveState moveState;
     private Unit unit;
     private int damage;
-    private State state;
+
     private RTSWorld rtsWorld;
     private Point moveGoal;
+
+    private Unit attackTarget;
 
     public RangeSoldierBehaviour() {
         idleState = new IdleState();
         moveState = new MoveState();
+        attackTargetState = new AttackTargetState();
         state = idleState;
     }
 
@@ -34,7 +39,7 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
     public void actionOnPoint(Point point) {
         Unit enemyUnit = rtsWorld.getEnemyUnitInPoint(point, unit.getPlayer());
         if (enemyUnit != null) {
-            state.actionOnEnemyUnit(unit);
+            state.actionOnEnemyUnit(enemyUnit);
         } else {
             state.actionOnPoint(point);
         }
@@ -62,8 +67,9 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
     private class IdleState implements State {
         @Override
-        public void actionOnEnemyUnit(Unit unit) {
-
+        public void actionOnEnemyUnit(Unit enemyUnit) {
+            attackTarget = enemyUnit;
+            state = attackTargetState;
         }
 
         @Override
@@ -81,8 +87,9 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
     private class MoveState implements State {
         @Override
-        public void actionOnEnemyUnit(Unit unit) {
-
+        public void actionOnEnemyUnit(Unit enemyUnit) {
+            attackTarget = enemyUnit;
+            state = attackTargetState;
         }
 
         @Override
@@ -96,6 +103,37 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
             unit.getMoveBehavior().update();
             if (unit.getAction() == ActionType.NOTHING) {
                 state = idleState;
+            }
+        }
+    }
+
+    private class AttackTargetState implements State {
+        @Override
+        public void actionOnEnemyUnit(Unit unit) {
+            attackTarget = unit;
+            state = attackTargetState;
+        }
+
+        @Override
+        public void actionOnPoint(Point point) {
+            moveGoal = point;
+            unit.getMoveBehavior().setDestMovePoint(point, false);
+            state = moveState;
+        }
+
+        @Override
+        public void update() {
+            if (attackTarget == null || attackTarget.isDead()) {
+                attackTarget = null;
+                if (moveGoal != null) {
+                    unit.getMoveBehavior().setDestMovePoint(moveGoal, false);
+                    state = moveState;
+                } else {
+                    state = idleState;
+                }
+            } else {
+                unit.setAction(ActionType.RANGE_ATTACK);
+                unit.setActionPoint(attackTarget.getPos().getCopy());
             }
         }
     }

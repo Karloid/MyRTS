@@ -13,9 +13,12 @@ import java.util.List;
 public class DefaultWorldLogicController implements WorldLogicController {
     private RTSWorld rtsWorld;
     private List<Unit> selectedUnits;
+    private long tick = 0;
 
     @Override
     public void update() {
+
+        tick++;
         updateUnits();
     }
 
@@ -61,6 +64,23 @@ public class DefaultWorldLogicController implements WorldLogicController {
             if (unit.getAction().equals(ActionType.MELEE_ATTACK)) {
                 unitMeleeAttack(unit);
             }
+            if (unit.getAction().equals(ActionType.RANGE_ATTACK)) {
+                unitRangeAttack(unit);
+            }
+        }
+    }
+
+    private void unitRangeAttack(Unit unit) {
+        if (unit.getAction() != ActionType.RANGE_ATTACK) {
+            return;
+        }
+        Point actionPoint = unit.getActionPoint();
+        if (actionPoint == null) {
+            return;
+        }
+        Unit enemy = rtsWorld.getEnemyUnitInPoint(actionPoint, unit.getPlayer());
+        if (enemy != null) {
+            enemy.receiveDamage(unit.getActionBehavior().getDamageAmount());
         }
     }
 

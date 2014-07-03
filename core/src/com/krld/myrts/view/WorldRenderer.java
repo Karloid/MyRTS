@@ -234,7 +234,7 @@ public class WorldRenderer {
             Unit unit = selectedUnits.get(0);
             List<Point> path = unit.getMoveBehavior().getPath();
             String debugString = "_";
-            if (path != null)
+            if (path != null && path.size() != 0)
                 debugString = ((AStarMoveBehavior) (unit.getMoveBehavior())).getManhattanDistance(unit.getPos(),
                         path.get(0), false) + "";
             fontLittle.draw(batch, "id:" + unit.getId() + "; Type: " + unit.getType(), UIConstants.UNIT_TYPE.getX(), UIConstants.UNIT_TYPE.getY());
@@ -242,7 +242,7 @@ public class WorldRenderer {
             String direstionInfo;
             direstionInfo = "Direction: " + unit.getDirection();
             if (unit.getType() == UnitType.TROOPER) {
-                direstionInfo += " " + ((RangeSoldierBehaviour)unit.getActionBehavior()).getState().getClass().getSimpleName();
+                direstionInfo += " " + ((RangeSoldierBehaviour) unit.getActionBehavior()).getState().getClass().getSimpleName();
             }
             fontLittle.draw(batch, direstionInfo, UIConstants.UNIT_DIRECTION.getX(), UIConstants.UNIT_DIRECTION.getY());
             fontLittle.draw(batch, "Debug: " + debugString, UIConstants.UNIT_DEBUG.getX(), UIConstants.UNIT_DEBUG.getY());

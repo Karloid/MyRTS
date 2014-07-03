@@ -16,6 +16,7 @@ public class Unit {
     private final int id;
     private ActionBehaviour actionBehavior;
     private int maxHp;
+    private Point actionPoint;
 
     public int getHp() {
         return hp;
@@ -137,5 +138,14 @@ public class Unit {
 
     public boolean isDead() {
         return hp <= 0;
+    }
+
+
+    public void setActionPoint(Point actionPoint) {
+        this.actionPoint = actionPoint;
+    }
+
+    public Point getActionPoint() {
+        return actionPoint;
     }
 }
