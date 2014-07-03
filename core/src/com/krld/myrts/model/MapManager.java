@@ -138,8 +138,10 @@ public class MapManager {
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
                 if (haveTag(rtsWorld.getMap()[x][y], "IMPASSABLE")) {
-                    int startX = x * rtsWorld.getUnitCellSize()/2;
-                    int startY = y * rtsWorld.getUnitCellSize()/2;
+                 /*   int startX = x * rtsWorld.getUnitCellSize()/2;
+                    int startY = y * rtsWorld.getUnitCellSize()/2; */
+                    int startX = x * RTSWorld.UNIT_CELL_SIZE_RELATIONS;
+                    int startY = y * RTSWorld.UNIT_CELL_SIZE_RELATIONS;
                     for (int i = 0; i < 4; i++) {
                         for (int j = 0; j < 4; j++) {
                             obstacleMap[startX + i][startY + j] = 1;

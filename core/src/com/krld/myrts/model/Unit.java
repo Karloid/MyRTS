@@ -1,7 +1,7 @@
 package com.krld.myrts.model;
 
 import com.krld.myrts.controller.ActionBehaviour;
-import com.krld.myrts.controller.MoveBehavior;
+import com.krld.myrts.controller.move.MoveBehavior;
 
 /**
  * Created by Andrey on 6/17/2014.

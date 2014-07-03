@@ -1,4 +1,4 @@
-package com.krld.myrts.controller;
+package com.krld.myrts.controller.move;
 
 import com.krld.myrts.model.RTSWorld;
 import com.krld.myrts.model.ActionType;
@@ -131,10 +131,17 @@ public class AStarMoveBehavior implements MoveBehavior {
         calcF(startNode);
         openNodes.add(startNode);
         assert (openNodes != null);
-        while (goalPosition != null && !openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)){
-            if (closedNodes.size() > MAX_CLOSE_NODES_COUNT) {
+        while (goalPosition != null) {
+            Node peek = openNodes.peek();
+            if (peek == null)
                 break;
-            }
+            if (peek.getPosition().equals(goalPosition))
+                break;
+            if ((openNodes.peek().getParentsCount() > MAX_LENGTH_PATH))
+                break;
+            if (closedNodes.size() > MAX_CLOSE_NODES_COUNT)
+                break;
+
             Node current = openNodes.peek();
             openNodes.remove(current);
             closedNodes.add(current);
@@ -163,12 +170,16 @@ public class AStarMoveBehavior implements MoveBehavior {
     private void calcPath() {
         path = new ArrayList<Point>();
         Node node = openNodes.peek();
-        while (true) {
+        while (true && node != null) {
             path.add(node.getPosition());
             node = node.getParent();
             if (node == null) {
                 break;
             }
+        }
+        if (path.size() == 0) {
+            path = null;
+            return;
         }
         Point lastPoint = path.get(0);
         Collections.reverse(path);

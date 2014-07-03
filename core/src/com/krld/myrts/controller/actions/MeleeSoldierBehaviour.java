@@ -1,8 +1,8 @@
-package com.krld.myrts.controller;
+package com.krld.myrts.controller.actions;
 
-import com.krld.myrts.controller.AStarMoveBehavior;
 import com.krld.myrts.controller.ActionBehaviour;
-import com.krld.myrts.controller.MoveBehavior;
+import com.krld.myrts.controller.move.AStarMoveBehavior;
+import com.krld.myrts.controller.move.MoveBehavior;
 import com.krld.myrts.model.*;
 
 import java.util.ArrayList;

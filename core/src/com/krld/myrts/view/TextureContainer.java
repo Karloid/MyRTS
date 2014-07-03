@@ -19,6 +19,11 @@ public class TextureContainer {
     public Texture destMoveTexture;
     public Texture stepsTexture;
     private Texture soldierCorpseTexture;
+    private Texture undeadSoldierDown;
+    private Texture undeadSoldierUp;
+    private Texture undeadSoldierLeft;
+    private Texture undeadSoldierRight;
+    private Texture undeadSoldierCorpse;
 
     public void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
@@ -30,6 +35,13 @@ public class TextureContainer {
         destMoveTexture = new Texture(Gdx.files.internal("destMovePoint.png"));
         stepsTexture = new Texture(Gdx.files.internal("steps.png"));
         soldierCorpseTexture = new Texture(Gdx.files.internal("soldier2_dead.png"));
+
+        undeadSoldierDown = new Texture(Gdx.files.internal("undead_soldier.png"));
+        undeadSoldierUp = new Texture(Gdx.files.internal("undead_soldier_up.png"));
+        undeadSoldierLeft= new Texture(Gdx.files.internal("undead_soldier_left.png"));
+        undeadSoldierRight = new Texture(Gdx.files.internal("undead_soldier_right.png"));
+        undeadSoldierCorpse = new Texture(Gdx.files.internal("undead_soldier_dead.png"));
+
     }
 
     public Texture getTextureForUnit(Unit unit) {
@@ -45,12 +57,28 @@ public class TextureContainer {
                 texture = soldierRightTexture;
             }
         }
+
+        if (unit.getType().equals(UnitType.UNDEAD_SOLDIER)) {
+            if (unit.getDirection() == null || unit.getDirection().equals(Direction.DOWN) || unit.getDirection() == Direction.SELF) {
+                texture = undeadSoldierDown;
+            } else if (unit.getDirection().equals(Direction.UP)) {
+                texture = undeadSoldierUp;
+            } else if (unit.getDirection().equals(Direction.LEFT)) {
+                texture = undeadSoldierLeft;
+            } else if (unit.getDirection().equals(Direction.RIGHT)) {
+                texture = undeadSoldierRight;
+            }
+        }
+
         return texture;
     }
 
     public Texture getTextureForCorpse(UnitType type) {
         if (type == UnitType.SOLDIER) {
             return soldierCorpseTexture;
+        }
+        if (type == UnitType.UNDEAD_SOLDIER) {
+            return undeadSoldierCorpse;
         }
         return null;
     }

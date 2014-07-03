@@ -6,10 +6,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.krld.myrts.controller.actions.RangeSoldierBehaviour;
 import com.krld.myrts.model.RTSWorld;
-import com.krld.myrts.controller.AStarMoveBehavior;
+import com.krld.myrts.controller.move.AStarMoveBehavior;
 import com.krld.myrts.model.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -158,17 +160,22 @@ public class WorldRenderer {
     }
 
     private void drawUnits(SpriteBatch batch, Point cameraPos) {
+        Iterator iter = rtsWorld.getUnits().iterator();
+        while (iter.hasNext()) {
+            try {
+                Unit unit = (Unit) iter.next();
+                Texture texture = tC.getTextureForUnit(unit);
+                if (texture == null) {
+                    texture = tC.defaultTexture;
+                }
+                int calcedX = unit.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+                int calcedY = unit.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+                batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+                drawDestPoint(batch, cameraPos, unit, calcedX, calcedY);
+                drawHpBar(batch, cameraPos, unit, calcedX, calcedY);
+            } catch (Exception e) {
 
-        for (Unit unit : rtsWorld.getUnits()) {
-            Texture texture = tC.getTextureForUnit(unit);
-            if (texture == null) {
-                texture = tC.defaultTexture;
             }
-            int calcedX = unit.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
-            int calcedY = unit.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
-            batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
-            drawDestPoint(batch, cameraPos, unit, calcedX, calcedY);
-            drawHpBar(batch, cameraPos, unit, calcedX, calcedY);
         }
 
     }
@@ -232,7 +239,12 @@ public class WorldRenderer {
                         path.get(0), false) + "";
             fontLittle.draw(batch, "id:" + unit.getId() + "; Type: " + unit.getType(), UIConstants.UNIT_TYPE.getX(), UIConstants.UNIT_TYPE.getY());
             fontLittle.draw(batch, "Action: " + unit.getAction(), UIConstants.UNIT_ACTION.getX(), UIConstants.UNIT_ACTION.getY());
-            fontLittle.draw(batch, "Direction: " + unit.getDirection(), UIConstants.UNIT_DIRECTION.getX(), UIConstants.UNIT_DIRECTION.getY());
+            String direstionInfo;
+            direstionInfo = "Direction: " + unit.getDirection();
+            if (unit.getType() == UnitType.TROOPER) {
+                direstionInfo += " " + ((RangeSoldierBehaviour)unit.getActionBehavior()).getState().getClass().getSimpleName();
+            }
+            fontLittle.draw(batch, direstionInfo, UIConstants.UNIT_DIRECTION.getX(), UIConstants.UNIT_DIRECTION.getY());
             fontLittle.draw(batch, "Debug: " + debugString, UIConstants.UNIT_DEBUG.getX(), UIConstants.UNIT_DEBUG.getY());
         } else if (selectedUnits != null) {
             fontLittle.draw(batch, "selected " + selectedUnits.size() + " units", UIConstants.UNIT_TYPE.getX(), UIConstants.UNIT_TYPE.getY());

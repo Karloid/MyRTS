@@ -1,4 +1,4 @@
-package com.krld.myrts.controller;
+package com.krld.myrts.controller.move;
 
 import com.krld.myrts.model.RTSWorld;
 import com.krld.myrts.model.Point;

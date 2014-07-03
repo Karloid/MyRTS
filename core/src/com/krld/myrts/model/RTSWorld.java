@@ -69,13 +69,15 @@ public class RTSWorld {
         units = Collections.synchronizedList(units);
         //  addTestUnitsTwo();
         //  addTestUnits();
-        addTestUnitsRandom(10, 100, 35, 35, getHumanPlayer());
-        addTestUnitsRandom(10, 100, 55, 55, getCPUPlayer());
+        addTestUnitsRandom(UnitType.TROOPER,10, 3, 35, 35, getHumanPlayer());
+        addTestUnitsRandom(UnitType.SOLDIER,10, 0, 35, 35, getHumanPlayer());
+        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,10, 15, 55, 55, getCPUPlayer());
+        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,30, 77, 99, 99, getCPUPlayer());
     }
 
-    private void addTestUnitsRandom(double delta, int n, double x, double y, Player player) {
+    private void addTestUnitsRandom(UnitType type, double delta, int n, double x, double y, Player player) {
         for (int i = 0; i < n; i++) {
-            addUnitIfCan(unitFabric.createSoldier((int) (x + Math.random() * delta), (int) (y + Math.random() * delta), player));
+            addUnitIfCan(unitFabric.create(type, (int) (x + Math.random() * delta), (int) (y + Math.random() * delta), player));
         }
     }
 
