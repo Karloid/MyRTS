@@ -170,8 +170,8 @@ public class WorldRenderer {
                 }
                 int calcedX = unit.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
                 int calcedY = unit.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
-                batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
                 drawDestPoint(batch, cameraPos, unit, calcedX, calcedY);
+                batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
                 drawHpBar(batch, cameraPos, unit, calcedX, calcedY);
             } catch (Exception e) {
 
@@ -203,7 +203,7 @@ public class WorldRenderer {
     private void drawDestPoint(SpriteBatch batch, Point cameraPos, Unit unit, int calcedX, int calcedY) {
         if (getRtsWorld().getWorldLogicController().getSelectedUnits() != null &&
                 getRtsWorld().getWorldLogicController().getSelectedUnits().contains(unit)) {
-            batch.draw(tC.selectRect, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+            batch.draw(tC.destMoveTexture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 1f, unitCellSize * 2, unitCellSize * 2);
             Point destPoint = unit.getMoveBehavior().getDestMovePoint();
             if (destPoint != null) {
                 calcedX = destPoint.getX() * unitCellSize - cameraPos.getX() + widthView / 2;

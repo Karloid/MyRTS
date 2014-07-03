@@ -69,10 +69,10 @@ public class RTSWorld {
         units = Collections.synchronizedList(units);
         //  addTestUnitsTwo();
         //  addTestUnits();
-        addTestUnitsRandom(UnitType.TROOPER,10, 1, 35, 35, getHumanPlayer());
+        addTestUnitsRandom(UnitType.TROOPER,10, 15, 35, 35, getHumanPlayer());
         addTestUnitsRandom(UnitType.SOLDIER,10, 0, 35, 35, getHumanPlayer());
         addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,10, 1, 55, 55, getCPUPlayer());
-        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,30, 0, 99, 99, getCPUPlayer());
+        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,30, 15, 99, 99, getCPUPlayer());
     }
 
     private void addTestUnitsRandom(UnitType type, double delta, int n, double x, double y, Player player) {
@@ -81,31 +81,6 @@ public class RTSWorld {
         }
     }
 
-    private void addTestUnitsTwo() {
-        units.add(unitFabric.createSoldier(7, 3, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(2, 5, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(15, 15, getCPUPlayer()));
-    }
-
-    private void addTestUnits() {
-
-        units.add(unitFabric.createSoldier(8, 5, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(4, 7, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(1, 3, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(11, 3, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(11, 13, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(11, 12, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(11, 11, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(0, 3, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(5, 2, getHumanPlayer()));
-        units.add(unitFabric.createSoldier(5, 17, getHumanPlayer()));
-
-        units.add(unitFabric.createSoldier(20, 20, getCPUPlayer()));
-        units.add(unitFabric.createSoldier(23, 22, getCPUPlayer()));
-        units.add(unitFabric.createSoldier(21, 25, getCPUPlayer()));
-        units.add(unitFabric.createSoldier(23, 26, getCPUPlayer()));
-        units.add(unitFabric.createSoldier(17, 20, getCPUPlayer()));
-    }
 
     private void addUnitIfCan(Unit unit) {
         if (noObstacle(unit.getPos())) {

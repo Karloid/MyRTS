@@ -297,6 +297,11 @@ public class AStarMoveBehavior implements MoveBehavior {
         return path;
     }
 
+    public static double getEuclideDistance(Point pos, Point pos1) {
+        double result = Math.sqrt(Math.pow(pos.getX() - pos1.getX(),2) + Math.pow(pos.getY() - pos1.getY(),2) );
+        return result;
+    }
+
     public class Node {
         private final int nodeType;
         private double f;

@@ -1,6 +1,7 @@
 package com.krld.myrts.controller.actions;
 
 import com.krld.myrts.controller.ActionBehaviour;
+import com.krld.myrts.controller.move.AStarMoveBehavior;
 import com.krld.myrts.model.ActionType;
 import com.krld.myrts.model.Point;
 import com.krld.myrts.model.RTSWorld;
@@ -21,12 +22,15 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
     private Point moveGoal;
 
     private Unit attackTarget;
+    private double findEnemyDistance;
 
     public RangeSoldierBehaviour() {
         idleState = new IdleState();
         moveState = new MoveState();
         attackTargetState = new AttackTargetState();
         state = idleState;
+
+        setFindEnemyDistance(33);
     }
 
     @Override
@@ -65,11 +69,34 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         return state;
     }
 
+
+    private Unit findNearbyEnemy() {
+        Unit candidatUnit = null;
+        for (Unit curUnit : rtsWorld.getUnits()) {
+            if (curUnit.getPlayer() != unit.getPlayer()) {
+                if (AStarMoveBehavior.getEuclideDistance(unit.getPos(), curUnit.getPos()) < getFindEnemyDistance()
+                        && (candidatUnit == null || AStarMoveBehavior.getEuclideDistance(unit.getPos(), candidatUnit.getPos()) < getFindEnemyDistance())) {
+                    candidatUnit = curUnit;
+                }
+            }
+        }
+        return candidatUnit;
+    }
+
+    public double getFindEnemyDistance() {
+        return findEnemyDistance;
+    }
+
+    public void setFindEnemyDistance(double findEnemyDistance) {
+        this.findEnemyDistance = findEnemyDistance;
+    }
+
     private class IdleState implements State {
         @Override
         public void actionOnEnemyUnit(Unit enemyUnit) {
             attackTarget = enemyUnit;
             state = attackTargetState;
+            state.update();
         }
 
         @Override
@@ -81,6 +108,12 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
         @Override
         public void update() {
+            Unit candidat = findNearbyEnemy();
+            if (candidat != null) {
+                attackTarget = candidat;
+                state = attackTargetState;
+                state.update();
+            }
 
         }
     }
@@ -90,6 +123,7 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         public void actionOnEnemyUnit(Unit enemyUnit) {
             attackTarget = enemyUnit;
             state = attackTargetState;
+            state.update();
         }
 
         @Override
@@ -112,6 +146,7 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         public void actionOnEnemyUnit(Unit unit) {
             attackTarget = unit;
             state = attackTargetState;
+            state.update();
         }
 
         @Override
