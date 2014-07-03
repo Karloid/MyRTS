@@ -70,8 +70,8 @@ public class RTSWorld {
         //  addTestUnitsTwo();
         //  addTestUnits();
         addTestUnitsRandom(UnitType.TROOPER,10, 15, 35, 35, getHumanPlayer());
-        addTestUnitsRandom(UnitType.SOLDIER,10, 0, 35, 35, getHumanPlayer());
-        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,10, 1, 55, 55, getCPUPlayer());
+        addTestUnitsRandom(UnitType.SOLDIER,10, 15, 35, 35, getHumanPlayer());
+        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,10, 15, 55, 55, getCPUPlayer());
         addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,30, 15, 99, 99, getCPUPlayer());
     }
 

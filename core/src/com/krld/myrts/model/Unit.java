@@ -17,6 +17,7 @@ public class Unit {
     private ActionBehaviour actionBehavior;
     private int maxHp;
     private Point actionPoint;
+    private float rangeAttack;
 
     public int getHp() {
         return hp;
@@ -148,4 +149,5 @@ public class Unit {
     public Point getActionPoint() {
         return actionPoint;
     }
+
 }

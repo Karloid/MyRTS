@@ -34,16 +34,17 @@ public class DefaultUnitFabric implements AbsractUnitFabric {
 
     @Override
     public Unit createTrooper(int x, int y, Player player) {
-        Unit unit = new Unit(x, y);
-        unit.setType(UnitType.TROOPER);
-        unit.setRtsWorld(getRtsWorld());
-        unit.setMoveBehavior(new AStarMoveBehavior());
-        unit.setPlayer(player);
-        unit.setActionBehavior(new RangeSoldierBehaviour());
-        unit.setMaxHp(100);
-        unit.setHp(unit.getMaxHp());
-        unit.getActionBehavior().setDefaultDamage(10);
-        return unit;
+        Unit trooper = new Unit(x, y);
+        trooper.setType(UnitType.TROOPER);
+        trooper.setRtsWorld(getRtsWorld());
+        trooper.setMoveBehavior(new AStarMoveBehavior());
+        trooper.setPlayer(player);
+        trooper.setActionBehavior(new RangeSoldierBehaviour());
+        trooper.setMaxHp(100);
+        trooper.setHp(trooper.getMaxHp());
+        trooper.getActionBehavior().setDefaultDamage(10);
+        trooper.getActionBehavior().setRangeAttack(10f);
+        return trooper;
     }
 
     @Override

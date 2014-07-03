@@ -23,11 +23,14 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
     private Unit attackTarget;
     private double findEnemyDistance;
+    private State goToTargetState;
+    private double rangeAttack;
 
     public RangeSoldierBehaviour() {
         idleState = new IdleState();
         moveState = new MoveState();
         attackTargetState = new AttackTargetState();
+        goToTargetState = new GoToTargetState();
         state = idleState;
 
         setFindEnemyDistance(33);
@@ -65,6 +68,11 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         this.damage = damage;
     }
 
+    @Override
+    public void setRangeAttack(float range) {
+        this.rangeAttack = range;
+    }
+
     public State getState() {
         return state;
     }
@@ -74,13 +82,17 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         Unit candidatUnit = null;
         for (Unit curUnit : rtsWorld.getUnits()) {
             if (curUnit.getPlayer() != unit.getPlayer()) {
-                if (AStarMoveBehavior.getEuclideDistance(unit.getPos(), curUnit.getPos()) < getFindEnemyDistance()
-                        && (candidatUnit == null || AStarMoveBehavior.getEuclideDistance(unit.getPos(), candidatUnit.getPos()) < getFindEnemyDistance())) {
+                if (getEuclideDistance(unit.getPos(), curUnit.getPos()) < getFindEnemyDistance()
+                        && (candidatUnit == null || getEuclideDistance(unit.getPos(), candidatUnit.getPos()) < getFindEnemyDistance())) {
                     candidatUnit = curUnit;
                 }
             }
         }
         return candidatUnit;
+    }
+
+    private double getEuclideDistance(Point pos, Point pos1) {
+        return AStarMoveBehavior.getEuclideDistance(pos, pos1);
     }
 
     public double getFindEnemyDistance() {
@@ -89,6 +101,14 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
     public void setFindEnemyDistance(double findEnemyDistance) {
         this.findEnemyDistance = findEnemyDistance;
+    }
+
+    public double getRangeAttack() {
+        return rangeAttack;
+    }
+
+    public void setRangeAttack(double rangeAttack) {
+        this.rangeAttack = rangeAttack;
     }
 
     private class IdleState implements State {
@@ -167,9 +187,34 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
                     state = idleState;
                 }
             } else {
-                unit.setAction(ActionType.RANGE_ATTACK);
-                unit.setActionPoint(attackTarget.getPos().getCopy());
+                if (getEuclideDistance(unit.getPos(), attackTarget.getPos()) > getRangeAttack()) {
+                    state = goToTargetState;
+                } else {
+                    unit.setAction(ActionType.RANGE_ATTACK);
+                    unit.setActionPoint(attackTarget.getPos().getCopy());
+                }
             }
+        }
+    }
+
+    private class GoToTargetState implements State {
+        @Override
+        public void actionOnEnemyUnit(Unit enemyUnit) {
+            attackTarget = enemyUnit;
+            state = attackTargetState;
+            state.update();
+        }
+
+        @Override
+        public void actionOnPoint(Point point) {
+            moveGoal = point;
+            unit.getMoveBehavior().setDestMovePoint(point, false);
+            state = moveState;
+        }
+
+        @Override
+        public void update() {
+                   thrthrth
         }
     }
 }

@@ -16,4 +16,6 @@ public interface ActionBehaviour {
     int getDamageAmount();
 
     void setDefaultDamage(int damage);
+
+    void setRangeAttack(float range);
 }

@@ -171,6 +171,11 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
         this.defaultDamage = defaultDamage;
     }
 
+    @Override
+    public void setRangeAttack(float range) {
+
+    }
+
     public double getFindEnemyDistance() {
         return findEnemyDistance;
     }
