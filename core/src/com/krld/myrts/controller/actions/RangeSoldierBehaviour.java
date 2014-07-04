@@ -15,6 +15,7 @@ import java.util.List;
  * Created by Andrey on 7/3/2014.
  */
 public class RangeSoldierBehaviour implements ActionBehaviour {
+    private long lastAttackTime;
     private State state;
     private State attackTargetState;
     private final IdleState idleState;
@@ -29,6 +30,7 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
     private double findEnemyDistance;
     private State goToTargetState;
     private double rangeAttack;
+    private int delayAttack;
 
     public RangeSoldierBehaviour() {
         idleState = new IdleState();
@@ -37,6 +39,7 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         goToTargetState = new GoToTargetState();
         state = idleState;
 
+
         setFindEnemyDistance(22);
     }
 
@@ -44,6 +47,7 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
     public void setUnit(Unit unit) {
         this.unit = unit;
         this.rtsWorld = unit.getRtsWorld();
+        lastAttackTime = rtsWorld.getTick();
     }
 
     @Override
@@ -79,7 +83,12 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
     @Override
     public void stopCommand() {
+        state = idleState;
+    }
 
+    @Override
+    public void setDelayAttack(int delay) {
+        this.delayAttack = delay;
     }
 
     public State getState() {
@@ -241,10 +250,19 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
                     unit.getMoveBehavior().setDestMovePoint(point, false);
                     state = goToTargetState;
                 } else {
-                    unit.setAction(ActionType.RANGE_ATTACK);
-                    unit.setActionPoint(attackTarget.getPos().getCopy());
+                    if (isCanAttack()) {
+                        lastAttackTime = rtsWorld.getTick();
+                        unit.setAction(ActionType.RANGE_ATTACK);
+                        unit.setActionPoint(attackTarget.getPos().getCopy());
+                    } else {
+                        unit.setAction(ActionType.NOTHING);
+                    }
                 }
             }
+        }
+
+        private boolean isCanAttack() {
+            return rtsWorld.getTick() - lastAttackTime > delayAttack;
         }
     }
 

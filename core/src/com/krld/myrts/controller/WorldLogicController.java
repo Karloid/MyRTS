@@ -21,4 +21,6 @@ public interface WorldLogicController {
     void mouseAction(Point point);
 
     void stopCommand();
+
+    long getTick();
 }

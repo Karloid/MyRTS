@@ -188,6 +188,11 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
 
     }
 
+    @Override
+    public void setDelayAttack(int delay) {
+
+    }
+
     public double getFindEnemyDistance() {
         return findEnemyDistance;
     }

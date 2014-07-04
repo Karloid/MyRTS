@@ -153,4 +153,9 @@ public class DefaultWorldLogicController implements WorldLogicController {
             unit.stopAction();
         }
     }
+
+    @Override
+    public long getTick() {
+        return tick;
+    }
 }

@@ -35,6 +35,7 @@ public class RTSWorld {
     private Player CPUPlayer;
     private int[][] obstacleMap;
     private List<Corpse> corpses;
+    private long log;
 
     public RTSWorld() {
         setCellSize(CELL_SIZE);
@@ -311,5 +312,9 @@ public class RTSWorld {
 
     public void setCorpses(List<Corpse> corpses) {
         this.corpses = corpses;
+    }
+
+    public long getTick() {
+        return getWorldLogicController().getTick();
     }
 }

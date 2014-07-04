@@ -20,4 +20,6 @@ public interface ActionBehaviour {
     void setRangeAttack(float range);
 
     void stopCommand();
+
+    void setDelayAttack(int delay);
 }

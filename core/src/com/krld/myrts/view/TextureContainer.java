@@ -33,6 +33,7 @@ public class TextureContainer {
     private Texture trooperUp;
     private Texture trooperLeft;
     private Texture trooperRight;
+    private Texture trooperCorpse;
 
     public void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
@@ -63,6 +64,8 @@ public class TextureContainer {
         trooperUp = new Texture(Gdx.files.internal("trooper_up.png"));
         trooperLeft = new Texture(Gdx.files.internal("trooper_left.png"));
         trooperRight = new Texture(Gdx.files.internal("trooper_right.png"));
+        trooperCorpse = new Texture(Gdx.files.internal("trooper_dead.png"));
+
     }
 
     public Texture getTextureForUnit(Unit unit) {
@@ -111,7 +114,7 @@ public class TextureContainer {
             return soldierCorpseTexture;
         }
         if (type == UnitType.TROOPER) {
-            return soldierCorpseTexture;
+            return trooperCorpse;
         }
         if (type == UnitType.UNDEAD_SOLDIER) {
             return undeadSoldierCorpse;

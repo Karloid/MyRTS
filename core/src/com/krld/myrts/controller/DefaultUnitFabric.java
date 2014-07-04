@@ -44,6 +44,7 @@ public class DefaultUnitFabric implements AbsractUnitFabric {
         trooper.setHp(trooper.getMaxHp());
         trooper.getActionBehavior().setDefaultDamage(10);
         trooper.getActionBehavior().setRangeAttack(10f);
+        trooper.getActionBehavior().setDelayAttack(5);
         return trooper;
     }
 
