@@ -27,9 +27,12 @@ public class TextureContainer {
     private Texture undeadSoldierLeft;
     private Texture undeadSoldierRight;
     private Texture undeadSoldierCorpse;
-    private Texture trooperUp;
+    private Texture trooperDown;
     private List<Texture> bulletFlashes;
     public Texture sword;
+    private Texture trooperUp;
+    private Texture trooperLeft;
+    private Texture trooperRight;
 
     public void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
@@ -56,7 +59,10 @@ public class TextureContainer {
         bulletFlashes.add(new Texture(Gdx.files.internal("bullet_flash_4.png")));
         bulletFlashes.add(new Texture(Gdx.files.internal("bullet_flash_5.png")));
 
-        trooperUp = new Texture(Gdx.files.internal("trooper.png"));
+        trooperDown = new Texture(Gdx.files.internal("trooper.png"));
+        trooperUp = new Texture(Gdx.files.internal("trooper_up.png"));
+        trooperLeft = new Texture(Gdx.files.internal("trooper_left.png"));
+        trooperRight = new Texture(Gdx.files.internal("trooper_right.png"));
     }
 
     public Texture getTextureForUnit(Unit unit) {
@@ -87,13 +93,13 @@ public class TextureContainer {
 
         if (unit.getType().equals(UnitType.TROOPER)) {
             if (unit.getDirection() == null || unit.getDirection().equals(Direction.DOWN) || unit.getDirection() == Direction.SELF) {
-                texture = trooperUp;
+                texture = trooperDown;
             } else if (unit.getDirection().equals(Direction.UP)) {
-                texture = soldierUpTexture;
+                texture = trooperUp;
             } else if (unit.getDirection().equals(Direction.LEFT)) {
-                texture = soldierleftTexture;
+                texture = trooperLeft;
             } else if (unit.getDirection().equals(Direction.RIGHT)) {
-                texture = soldierRightTexture;
+                texture = trooperRight;
             }
         }
 
