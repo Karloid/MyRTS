@@ -6,6 +6,7 @@ import com.krld.myrts.controller.move.MoveBehavior;
 import com.krld.myrts.model.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,7 +46,6 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
         if (attackedUnit != null) {
             findAndAttackNearbyEnemy();
             attackingUnit();
-
         } else {
             unit.getMoveBehavior().update();
         }
@@ -154,6 +154,7 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
         if (rtsWorld.canMoveToPoint(testPoint, false)) {
             availablePointsToMove.add(testPoint);
         }
+        Collections.shuffle(availablePointsToMove);
         return availablePointsToMove;
     }
 

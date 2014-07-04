@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class WorldRenderer {
     private static final float LINE_WIDTH = 5;
-    private static final float HP_BAR_HEIGHT = 3;
+    private static final float HP_BAR_HEIGHT = 2;
     private static final Color ALLIES_UNIT_COLOR = Color.GREEN;
     private static final Color ENEMY_COLOR = Color.RED;
     private RTSWorld rtsWorld;
@@ -212,6 +212,7 @@ public class WorldRenderer {
             }
         }
     }
+
 
 
     private void initValues() {

@@ -7,6 +7,10 @@ import com.krld.myrts.model.Point;
 import com.krld.myrts.model.RTSWorld;
 import com.krld.myrts.model.Unit;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by Andrey on 7/3/2014.
  */
@@ -33,7 +37,7 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         goToTargetState = new GoToTargetState();
         state = idleState;
 
-        setFindEnemyDistance(33);
+        setFindEnemyDistance(22);
     }
 
     @Override
@@ -83,12 +87,50 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         for (Unit curUnit : rtsWorld.getUnits()) {
             if (curUnit.getPlayer() != unit.getPlayer()) {
                 if (getEuclideDistance(unit.getPos(), curUnit.getPos()) < getFindEnemyDistance()
-                        && (candidatUnit == null || getEuclideDistance(unit.getPos(), candidatUnit.getPos()) < getFindEnemyDistance())) {
+                        && (candidatUnit == null || getEuclideDistance(unit.getPos(), curUnit.getPos()) < (getEuclideDistance(unit.getPos(), candidatUnit.getPos())))) {
                     candidatUnit = curUnit;
                 }
             }
         }
         return candidatUnit;
+    }
+
+    private Point getClosestOpenPointToAttackedUnit(Point point) {
+        List<Point> availablePointsToMove = new ArrayList<Point>();
+        fillAvailablePointsToMoveNearAttackedUnit(availablePointsToMove, point);
+        Point openPoint = null;
+        for (Point forEachPoint : availablePointsToMove) {
+            if (openPoint == null || Point.getManhattanDistance(openPoint, unit.getPos()) > Point.getManhattanDistance(forEachPoint, unit.getPos())) {
+                openPoint = forEachPoint;
+            }
+        }
+        return openPoint;
+    }
+
+    private List<Point> fillAvailablePointsToMoveNearAttackedUnit(List<Point> availablePointsToMove, Point point) {
+        Point testPoint;
+        testPoint = point.getCopy();
+        testPoint.setY(testPoint.getY() + 1);
+        if (rtsWorld.canMoveToPoint(testPoint, false)) {
+            availablePointsToMove.add(testPoint);
+        }
+        testPoint = point.getCopy();
+        testPoint.setX(testPoint.getX() + 1);
+        if (rtsWorld.canMoveToPoint(testPoint, false)) {
+            availablePointsToMove.add(testPoint);
+        }
+        testPoint = point.getCopy();
+        testPoint.setY(testPoint.getY() - 1);
+        if (rtsWorld.canMoveToPoint(testPoint, false)) {
+            availablePointsToMove.add(testPoint);
+        }
+        testPoint = point.getCopy();
+        testPoint.setX(testPoint.getX() - 1);
+        if (rtsWorld.canMoveToPoint(testPoint, false)) {
+            availablePointsToMove.add(testPoint);
+        }
+        Collections.shuffle(availablePointsToMove);
+        return availablePointsToMove;
     }
 
     private double getEuclideDistance(Point pos, Point pos1) {
@@ -188,6 +230,8 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
                 }
             } else {
                 if (getEuclideDistance(unit.getPos(), attackTarget.getPos()) > getRangeAttack()) {
+                    Point point = getClosestOpenPointToAttackedUnit(attackTarget.getPos());
+                    unit.getMoveBehavior().setDestMovePoint(point, false);
                     state = goToTargetState;
                 } else {
                     unit.setAction(ActionType.RANGE_ATTACK);
@@ -214,7 +258,15 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
         @Override
         public void update() {
-                   thrthrth
+            if (attackTarget.isDead()) {
+                state = idleState;
+            } else if (getEuclideDistance(unit.getPos(), attackTarget.getPos()) <= getRangeAttack()) {
+                state = attackTargetState;
+                state.update();
+            } else {
+                unit.getMoveBehavior().update();
+            }
+
         }
     }
 }

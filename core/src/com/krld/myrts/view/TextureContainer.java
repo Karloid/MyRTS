@@ -39,7 +39,7 @@ public class TextureContainer {
 
         undeadSoldierDown = new Texture(Gdx.files.internal("undead_soldier.png"));
         undeadSoldierUp = new Texture(Gdx.files.internal("undead_soldier_up.png"));
-        undeadSoldierLeft= new Texture(Gdx.files.internal("undead_soldier_left.png"));
+        undeadSoldierLeft = new Texture(Gdx.files.internal("undead_soldier_left.png"));
         undeadSoldierRight = new Texture(Gdx.files.internal("undead_soldier_right.png"));
         undeadSoldierCorpse = new Texture(Gdx.files.internal("undead_soldier_dead.png"));
 
@@ -89,6 +89,9 @@ public class TextureContainer {
 
     public Texture getTextureForCorpse(UnitType type) {
         if (type == UnitType.SOLDIER) {
+            return soldierCorpseTexture;
+        }
+        if (type == UnitType.TROOPER) {
             return soldierCorpseTexture;
         }
         if (type == UnitType.UNDEAD_SOLDIER) {
