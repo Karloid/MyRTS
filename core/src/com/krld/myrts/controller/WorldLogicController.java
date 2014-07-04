@@ -19,4 +19,6 @@ public interface WorldLogicController {
     List<Unit> getSelectedUnits();
 
     void mouseAction(Point point);
+
+    void stopCommand();
 }

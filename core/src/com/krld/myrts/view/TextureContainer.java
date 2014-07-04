@@ -6,6 +6,9 @@ import com.krld.myrts.model.Direction;
 import com.krld.myrts.model.Unit;
 import com.krld.myrts.model.UnitType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Andrey on 7/1/2014.
  */
@@ -25,6 +28,8 @@ public class TextureContainer {
     private Texture undeadSoldierRight;
     private Texture undeadSoldierCorpse;
     private Texture trooperUp;
+    private List<Texture> bulletFlashes;
+    public Texture sword;
 
     public void initTextures() {
         defaultTexture = new Texture(Gdx.files.internal("unknow.png"));
@@ -42,6 +47,14 @@ public class TextureContainer {
         undeadSoldierLeft = new Texture(Gdx.files.internal("undead_soldier_left.png"));
         undeadSoldierRight = new Texture(Gdx.files.internal("undead_soldier_right.png"));
         undeadSoldierCorpse = new Texture(Gdx.files.internal("undead_soldier_dead.png"));
+
+        sword = new Texture(Gdx.files.internal("sword.png"));
+        bulletFlashes = new ArrayList<Texture>();
+        bulletFlashes.add(new Texture(Gdx.files.internal("bullet_flash.png")));
+        bulletFlashes.add(new Texture(Gdx.files.internal("bullet_flash_2.png")));
+        bulletFlashes.add(new Texture(Gdx.files.internal("bullet_flash_3.png")));
+        bulletFlashes.add(new Texture(Gdx.files.internal("bullet_flash_4.png")));
+        bulletFlashes.add(new Texture(Gdx.files.internal("bullet_flash_5.png")));
 
         trooperUp = new Texture(Gdx.files.internal("trooper.png"));
     }
@@ -98,5 +111,10 @@ public class TextureContainer {
             return undeadSoldierCorpse;
         }
         return null;
+    }
+
+    public Texture getRandomBulletFlash() {
+        int index = (int) (Math.random() * bulletFlashes.size());
+        return bulletFlashes.get(index);
     }
 }

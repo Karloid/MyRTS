@@ -67,6 +67,11 @@ public class AStarMoveBehavior implements MoveBehavior {
         return goalPosition;
     }
 
+    @Override
+    public int getDenyMoves() {
+        return denyMoves;
+    }
+
     private boolean goalPositionReached(int distance) {
         return getManhattanDistance(unit.getPos(), goalPosition, false) <= distance;
     }

@@ -65,6 +65,10 @@ public class MyInputProcessor implements InputProcessor {
         if (keyCode == Input.Keys.F1) {
             getRTSWorld().getWorldRenderer().setDrawDebug(!getRTSWorld().getWorldRenderer().isDrawDebug());
         }
+
+        if (keyCode == Input.Keys.S) {
+            getRTSWorld().getWorldLogicController().stopCommand();
+        }
         return false;
     }
 

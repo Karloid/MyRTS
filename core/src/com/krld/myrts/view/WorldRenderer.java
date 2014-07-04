@@ -11,7 +11,9 @@ import com.krld.myrts.model.RTSWorld;
 import com.krld.myrts.controller.move.AStarMoveBehavior;
 import com.krld.myrts.model.*;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -104,14 +106,22 @@ public class WorldRenderer {
     }
 
     private void drawCorpses(SpriteBatch batch, Point cameraPos) {
-        for (Corpse corpse : rtsWorld.getCorpses()) {
-            Texture texture = tC.getTextureForCorpse(corpse.getType());
-            if (texture == null) {
-                texture = tC.defaultTexture;
+        List<Corpse> corpses = new LinkedList<>();
+        corpses.addAll(rtsWorld.getCorpses());
+        Iterator iter = corpses.iterator();
+        while (iter.hasNext()) {
+            try {
+                Corpse corpse = (Corpse) iter.next();
+                Texture texture = tC.getTextureForCorpse(corpse.getType());
+                if (texture == null) {
+                    texture = tC.defaultTexture;
+                }
+                int calcedX = corpse.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+                int calcedY = corpse.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+                batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            int calcedX = corpse.getPos().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
-            int calcedY = corpse.getPos().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
-            batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
         }
     }
 
@@ -160,7 +170,9 @@ public class WorldRenderer {
     }
 
     private void drawUnits(SpriteBatch batch, Point cameraPos) {
-        Iterator iter = rtsWorld.getUnits().iterator();
+        Collection<Unit> tmpCollection = new LinkedList<Unit>();
+        tmpCollection.addAll(rtsWorld.getUnits());
+        Iterator iter = tmpCollection.iterator();
         while (iter.hasNext()) {
             try {
                 Unit unit = (Unit) iter.next();
@@ -174,9 +186,37 @@ public class WorldRenderer {
                 batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
                 drawHpBar(batch, cameraPos, unit, calcedX, calcedY);
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
+        // draw decales
+        iter = rtsWorld.getUnits().iterator();
+        while (iter.hasNext()) {
+            try {
+                Unit unit = (Unit) iter.next();
+                Texture texture;
+                int calcedX;
+                int calcedY;
+                if (unit.getAction() == ActionType.RANGE_ATTACK) {
+                    texture = tC.getRandomBulletFlash();
+                    calcedX = unit.getActionPoint().getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+                    calcedY = unit.getActionPoint().getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+                } else if (unit.getAction() == ActionType.MELEE_ATTACK) {
+                    texture = tC.sword;
+                    Point point = rtsWorld.getPointOnDirection(unit.getPos(), unit.getDirection());
+                    calcedX = point.getX() * unitCellSize - cameraPos.getX() + widthView / 2;
+                    calcedY = point.getY() * unitCellSize - cameraPos.getY() + heightView / 2;
+                } else {
+                    continue;
+                }
+
+
+                batch.draw(texture, calcedX - unitCellSize * 0.5f, calcedY - unitCellSize * 0.5f, unitCellSize * 2, unitCellSize * 2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
 
     }
 
@@ -214,7 +254,6 @@ public class WorldRenderer {
     }
 
 
-
     private void initValues() {
         heightView = getWorldView().getHeigth();
         widthView = getWorldView().getWidth();
@@ -242,7 +281,7 @@ public class WorldRenderer {
             fontLittle.draw(batch, "Action: " + unit.getAction(), UIConstants.UNIT_ACTION.getX(), UIConstants.UNIT_ACTION.getY());
             String direstionInfo;
             direstionInfo = "Direction: " + unit.getDirection();
-            if (unit.getType() == UnitType.TROOPER) {
+            if (unit.getActionBehavior() instanceof RangeSoldierBehaviour) {
                 direstionInfo += " " + ((RangeSoldierBehaviour) unit.getActionBehavior()).getState().getClass().getSimpleName();
             }
             fontLittle.draw(batch, direstionInfo, UIConstants.UNIT_DIRECTION.getX(), UIConstants.UNIT_DIRECTION.getY());

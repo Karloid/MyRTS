@@ -77,6 +77,11 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         this.rangeAttack = range;
     }
 
+    @Override
+    public void stopCommand() {
+
+    }
+
     public State getState() {
         return state;
     }
@@ -170,6 +175,9 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
         @Override
         public void update() {
+            if (unit.getAction() != ActionType.NOTHING) {
+                unit.setAction(ActionType.NOTHING);
+            }
             Unit candidat = findNearbyEnemy();
             if (candidat != null) {
                 attackTarget = candidat;
@@ -196,8 +204,9 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
 
         @Override
         public void update() {
+
             unit.getMoveBehavior().update();
-            if (unit.getAction() == ActionType.NOTHING) {
+            if (unit.getAction() == ActionType.NOTHING || unit.getMoveBehavior().getDenyMoves() > 3) {
                 state = idleState;
             }
         }
@@ -222,12 +231,10 @@ public class RangeSoldierBehaviour implements ActionBehaviour {
         public void update() {
             if (attackTarget == null || attackTarget.isDead()) {
                 attackTarget = null;
-                if (moveGoal != null) {
-                    unit.getMoveBehavior().setDestMovePoint(moveGoal, false);
-                    state = moveState;
-                } else {
-                    state = idleState;
-                }
+
+                unit.setAction(ActionType.NOTHING);
+                state = idleState;
+
             } else {
                 if (getEuclideDistance(unit.getPos(), attackTarget.getPos()) > getRangeAttack()) {
                     Point point = getClosestOpenPointToAttackedUnit(attackTarget.getPos());

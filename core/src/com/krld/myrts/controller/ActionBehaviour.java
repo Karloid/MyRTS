@@ -18,4 +18,6 @@ public interface ActionBehaviour {
     void setDefaultDamage(int damage);
 
     void setRangeAttack(float range);
+
+    void stopCommand();
 }

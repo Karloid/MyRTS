@@ -25,4 +25,6 @@ public interface MoveBehavior {
     void applyMove();
 
     Point getDestMovePoint();
+
+    int getDenyMoves();
 }

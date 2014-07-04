@@ -61,9 +61,15 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
         for (Unit curUnit : rtsWorld.getUnits()) {
             if (curUnit.getPlayer() != unit.getPlayer()) {
                 if (AStarMoveBehavior.getManhattanDistance(unit.getPos(), curUnit.getPos()) < getFindEnemyDistance()
-                        && (candidatUnit == null || AStarMoveBehavior.getManhattanDistance(unit.getPos(), candidatUnit.getPos()) < getFindEnemyDistance())) {
+                        && (candidatUnit == null ||
+                        AStarMoveBehavior.getManhattanDistance(unit.getPos(), curUnit.getPos()) <
+                                AStarMoveBehavior.getManhattanDistance(unit.getPos(), candidatUnit.getPos()))) {
                     candidatUnit = curUnit;
                 }
+                /*     if (getEuclideDistance(unit.getPos(), curUnit.getPos()) < getFindEnemyDistance()
+                        && (candidatUnit == null || getEuclideDistance(unit.getPos(), curUnit.getPos()) < (getEuclideDistance(unit.getPos(), candidatUnit.getPos())))) {
+                    candidatUnit = curUnit;
+                }*/
             }
         }
         if (candidatUnit != null)
@@ -174,6 +180,11 @@ public class MeleeSoldierBehaviour implements ActionBehaviour {
 
     @Override
     public void setRangeAttack(float range) {
+
+    }
+
+    @Override
+    public void stopCommand() {
 
     }
 

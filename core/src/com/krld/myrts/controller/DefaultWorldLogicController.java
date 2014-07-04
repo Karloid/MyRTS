@@ -140,7 +140,17 @@ public class DefaultWorldLogicController implements WorldLogicController {
             return;
         }
         for (Unit unit : selectedUnits) {
-            unit.setDestMovePoint(point);
+            unit.actionOnPoint(point);
+        }
+    }
+
+    @Override
+    public void stopCommand() {
+        if (selectedUnits == null) {
+            return;
+        }
+        for (Unit unit : selectedUnits) {
+            unit.stopAction();
         }
     }
 }

@@ -69,10 +69,11 @@ public class RTSWorld {
         units = Collections.synchronizedList(units);
         //  addTestUnitsTwo();
         //  addTestUnits();
-        addTestUnitsRandom(UnitType.TROOPER,10, 15, 35, 35, getHumanPlayer());
-        addTestUnitsRandom(UnitType.SOLDIER,10, 15, 35, 35, getHumanPlayer());
-        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,10, 15, 55, 55, getCPUPlayer());
-        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER,30, 15, 99, 99, getCPUPlayer());
+        addTestUnitsRandom(UnitType.TROOPER, 33, 400, 35, 35, getHumanPlayer());
+        addTestUnitsRandom(UnitType.SOLDIER, 22, 400, 35, 35, getHumanPlayer());
+        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER, 15, 200, 55, 55, getCPUPlayer());
+        addTestUnitsRandom(UnitType.UNDEAD_SOLDIER, 30, 200, 99, 99, getCPUPlayer());
+        addTestUnitsRandom(UnitType.TROOPER, 30, 200, 99, 99, getCPUPlayer());
     }
 
     private void addTestUnitsRandom(UnitType type, double delta, int n, double x, double y, Player player) {
@@ -226,10 +227,20 @@ public class RTSWorld {
     }
 
     private boolean unitInPoint(Point point) {
-        for (Unit unit : units) {
-            if (unit.getPos().getX() == point.getX() && unit.getPos().getY() == point.getY()) {
-                return true;
+        if (point == null) {
+            return false;
+        }
+        try {
+            for (Unit unit : units) {
+                if (unit == null || unit.getPos() == null) {
+                    continue;
+                }
+                if (unit.getPos().getX() == point.getX() && unit.getPos().getY() == point.getY()) {
+                    return true;
+                }
             }
+        } catch (Exception e) {
+
         }
         return false;
     }

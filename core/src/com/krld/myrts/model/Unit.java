@@ -71,7 +71,7 @@ public class Unit {
         this.player = player;
     }
 
-    public void setDestMovePoint(Point point) {
+    public void actionOnPoint(Point point) {
         getActionBehavior().actionOnPoint(point);
 
     }
@@ -150,4 +150,7 @@ public class Unit {
         return actionPoint;
     }
 
+    public void stopAction() {
+        actionBehavior.stopCommand();
+    }
 }

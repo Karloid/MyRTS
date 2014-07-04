@@ -71,9 +71,9 @@ public class DefaultUnitFabric implements AbsractUnitFabric {
         unit.setMoveBehavior(new AStarMoveBehavior());
         unit.setPlayer(player);
         unit.setActionBehavior(new MeleeSoldierBehaviour());
-        unit.setMaxHp(70);
+        unit.setMaxHp(100);
         unit.setHp(unit.getMaxHp());
-        unit.getActionBehavior().setDefaultDamage(8);
+        unit.getActionBehavior().setDefaultDamage(10);
         return unit;
     }
 
